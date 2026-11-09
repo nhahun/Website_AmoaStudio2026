@@ -81,9 +81,16 @@
     .work-item { transition: opacity .4s ease; }
     .work-item.is-hidden { display: none; }
 
+    /* Trang chi tiết gói dịch vụ (lớp phủ toàn màn hình) */
+    .pkg-page { visibility: hidden; opacity: 0; transform: translateY(24px);
+      transition: opacity .45s ease, transform .45s ease, visibility 0s linear .45s; }
+    .pkg-page.is-open { visibility: visible; opacity: 1; transform: none;
+      transition: opacity .45s ease, transform .45s ease; }
+    body.pkg-lock { overflow: hidden; }
+
     @media (prefers-reduced-motion: reduce) {
       html { scroll-behavior: auto; }
-      .js .reveal, .hero-slide, .acc-panel, .work-item { transition: none; }
+      .js .reveal, .hero-slide, .acc-panel, .work-item, .pkg-page { transition: none; }
     }
   </style>
 
@@ -124,19 +131,34 @@
   <header id="site-header" class="header-glass fixed top-0 left-0 w-full z-50 border-b border-black/10">
     <div class="container mx-auto px-4 h-20 md:h-24 flex items-center justify-between">
 
-      <!-- LOGO (tạm thời dạng chữ).
-           Khi có logo ảnh, thay thẻ <span> bằng:
-           <img src="logo.png" alt="Amoa" class="h-14 md:h-16 w-auto object-contain"> -->
-      <a href="#about" class="flex flex-col leading-none" aria-label="Amoa — về đầu trang" data-i18n-aria="logo.aria">
-        <span class="font-heading text-3xl md:text-4xl text-primary tracking-wide">Amoa</span>
-        <span class="text-[10px] tracking-[0.3em] uppercase text-muted mt-1">Wedding · Floral</span>
+      <!-- LOGO (ảnh gốc: images/logo.png; bản đã cắt nền: images/logo-amoa.png) -->
+      <a href="#about" class="flex items-center shrink-0" aria-label="Amoa — về đầu trang" data-i18n-aria="logo.aria">
+        <img src="images/logo-amoa.png" alt="Amoa — studio de fleur" width="472" height="146" class="h-11 md:h-14 w-auto object-contain" />
       </a>
 
       <!-- Menu desktop -->
       <nav class="hidden md:flex items-center gap-10 font-heading" aria-label="Điều hướng chính" data-i18n-aria="nav.aria">
         <a href="#about" class="nav-link text-base tracking-widest text-ink hover:text-primary transition-colors pb-1 border-b-2 border-transparent" data-i18n="nav.about">Giới thiệu</a>
         <a href="#portfolio" class="nav-link text-base tracking-widest text-ink hover:text-primary transition-colors pb-1 border-b-2 border-transparent" data-i18n="nav.portfolio">Tác phẩm</a>
-        <a href="#services" class="nav-link text-base tracking-widest text-ink hover:text-primary transition-colors pb-1 border-b-2 border-transparent" data-i18n="nav.services">Dịch vụ</a>
+        <!-- Dịch vụ + dropdown (rê chuột hoặc Tab vào để mở) -->
+        <div class="relative group/dd">
+          <a href="#services" class="nav-link inline-flex items-center gap-1.5 text-base tracking-widest text-ink hover:text-primary transition-colors pb-1 border-b-2 border-transparent" aria-haspopup="true">
+            <span data-i18n="nav.services">Dịch vụ</span>
+            <svg class="w-3 h-3 transition-transform duration-300 group-hover/dd:rotate-180 group-focus-within/dd:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
+          </a>
+          <div class="absolute left-1/2 top-full -translate-x-1/2 pt-5 invisible opacity-0 translate-y-2 transition-all duration-300 group-hover/dd:visible group-hover/dd:opacity-100 group-hover/dd:translate-y-0 group-focus-within/dd:visible group-focus-within/dd:opacity-100 group-focus-within/dd:translate-y-0">
+            <div class="w-56 bg-cream border border-line rounded-xl shadow-xl p-2 font-body">
+              <a href="#planning" class="flex items-center gap-4 rounded-lg px-4 py-3 hover:bg-card transition-colors group/item">
+                <span class="font-heading text-2xl text-accent leading-none">01</span>
+                <span class="font-heading text-lg tracking-wide text-ink group-hover/item:text-primary transition-colors" data-i18n="nav.planning">Lên kế hoạch</span>
+              </a>
+              <a href="#decoration" class="flex items-center gap-4 rounded-lg px-4 py-3 hover:bg-card transition-colors group/item">
+                <span class="font-heading text-2xl text-accent leading-none">02</span>
+                <span class="font-heading text-lg tracking-wide text-ink group-hover/item:text-primary transition-colors" data-i18n="nav.decor">Trang trí</span>
+              </a>
+            </div>
+          </div>
+        </div>
         <a href="#contact" class="nav-link text-base tracking-widest text-ink hover:text-primary transition-colors pb-1 border-b-2 border-transparent" data-i18n="nav.contact">Liên hệ</a>
       </nav>
 
@@ -147,7 +169,7 @@
           <span class="text-line">/</span>
           <button type="button" class="lang-btn transition-colors" data-lang="en">EN</button>
         </div>
-        <a href="#contact"
+        <a href="#dat-lich"
           class="inline-flex items-center rounded-full bg-primary hover:bg-secondary text-white px-6 h-11 text-sm tracking-wide transition-colors duration-300"
           data-i18n="cta.book">Đặt lịch tư vấn</a>
       </div>
@@ -172,6 +194,10 @@
         <a href="#about" class="mobile-link text-xl tracking-wide" data-i18n="nav.about">Giới thiệu</a>
         <a href="#portfolio" class="mobile-link text-xl tracking-wide" data-i18n="nav.portfolio">Tác phẩm</a>
         <a href="#services" class="mobile-link text-xl tracking-wide" data-i18n="nav.services">Dịch vụ</a>
+        <div class="-mt-2 pl-5 border-l border-line flex flex-col gap-3">
+          <a href="#planning" class="mobile-link text-lg tracking-wide text-muted"><span class="text-accent mr-2">01</span><span data-i18n="nav.planning">Lên kế hoạch</span></a>
+          <a href="#decoration" class="mobile-link text-lg tracking-wide text-muted"><span class="text-accent mr-2">02</span><span data-i18n="nav.decor">Trang trí</span></a>
+        </div>
         <a href="#contact" class="mobile-link text-xl tracking-wide" data-i18n="nav.contact">Liên hệ</a>
       </nav>
     </div>
@@ -212,7 +238,7 @@
             <a href="#portfolio"
               class="inline-flex items-center justify-center rounded-full bg-primary hover:bg-secondary text-white px-8 h-14 text-lg transition-colors duration-300"
               data-i18n="hero.viewWork">Xem tác phẩm</a>
-            <a href="#contact"
+            <a href="#dat-lich"
               class="inline-flex items-center justify-center rounded-full border-2 border-primary text-primary hover:border-secondary hover:text-secondary px-8 h-14 text-lg transition-colors duration-300"
               data-i18n="cta.book">Đặt lịch tư vấn</a>
           </div>
@@ -222,21 +248,48 @@
         <div id="hero-dots" class="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex gap-3"></div>
       </div>
 
-      <!-- 1b. THƯ NGỎ (trái) & QUY TRÌNH 6 BƯỚC (phải) -->
+      <!-- 1b. THƯ NGỎ — collage ảnh (trái) & lời nhắn Founder (phải) -->
       <div class="container mx-auto px-4 py-24 md:py-32">
-        <div class="grid lg:grid-cols-2 gap-16 lg:gap-24">
+        <div class="grid lg:grid-cols-12 gap-16 lg:gap-20 items-center">
 
-          <!-- Thư ngỏ từ Founder (dính lại khi cuộn trên desktop) -->
-          <div class="reveal lg:sticky lg:top-32 self-start">
+          <!-- Collage 4 ảnh xếp chồng (mobile: lưới 2 cột) — thay src bằng ảnh thật của Amoa -->
+          <div class="reveal lg:col-span-7 relative grid grid-cols-2 gap-3 md:grid-cols-12 md:grid-rows-12 md:gap-0 md:h-[620px]">
+            <!-- Khung viền trang trí -->
+            <span class="hidden md:block md:col-start-9 md:col-end-13 md:row-start-1 md:row-end-4 border border-primary rounded-sm translate-x-4 -translate-y-4" aria-hidden="true"></span>
+
+            <!-- Ảnh A: ảnh chính, bo vòm -->
+            <figure class="col-span-2 aspect-[4/3] md:aspect-auto md:col-start-1 md:col-end-7 md:row-start-1 md:row-end-11 overflow-hidden rounded-sm md:rounded-t-full shadow-xl">
+              <img src="https://images.unsplash.com/photo-1550005809-91ad75fb315f?auto=format&fit=crop&w=1000&q=80"
+                alt="Cô dâu cầm bó hoa pastel" data-i18n-alt="alt.letter" loading="lazy"
+                class="w-full h-full object-cover transition-transform duration-700 hover:scale-105" />
+            </figure>
+
+            <!-- Ảnh B: bàn tiệc hoa, đè lên ảnh A -->
+            <figure class="aspect-square md:aspect-auto md:col-start-6 md:col-end-13 md:row-start-2 md:row-end-7 md:z-10 overflow-hidden rounded-sm md:border-[6px] md:border-cream shadow-xl">
+              <img src="https://images.unsplash.com/photo-1525772764200-be829a350797?auto=format&fit=crop&w=900&q=80"
+                alt="Bàn tiệc cưới với hoa hồng và nến" data-i18n-alt="alt.letter2" loading="lazy"
+                class="w-full h-full object-cover transition-transform duration-700 hover:scale-105" />
+            </figure>
+
+            <!-- Ảnh C: cặp đôi giữa đồi -->
+            <figure class="aspect-square md:aspect-auto md:col-start-7 md:col-end-12 md:row-start-8 md:row-end-13 overflow-hidden rounded-sm shadow-lg">
+              <img src="https://images.unsplash.com/photo-1532712938310-34cb3982ef74?auto=format&fit=crop&w=900&q=80"
+                alt="Cặp đôi nắm tay dạo bước trên đồi" data-i18n-alt="alt.letter3" loading="lazy"
+                class="w-full h-full object-cover transition-transform duration-700 hover:scale-105" />
+            </figure>
+
+            <!-- Ảnh D: hai bàn tay, đè lên góc ảnh A -->
+            <figure class="col-span-2 aspect-[16/9] md:aspect-auto md:col-start-3 md:col-end-7 md:row-start-9 md:row-end-13 md:z-20 overflow-hidden rounded-sm md:border-[6px] md:border-cream shadow-xl">
+              <img src="https://images.unsplash.com/photo-1520854221256-17451cc331bf?auto=format&fit=crop&w=900&q=80"
+                alt="Cô dâu chú rể nắm tay nhau" data-i18n-alt="alt.letter4" loading="lazy"
+                class="w-full h-full object-cover transition-transform duration-700 hover:scale-105" />
+            </figure>
+          </div>
+
+          <!-- Lời nhắn từ Founder -->
+          <div class="reveal lg:col-span-5">
             <p class="text-xs font-semibold text-primary uppercase tracking-[0.15em] mb-4" data-i18n="letter.eyebrow">Thư ngỏ</p>
             <h2 class="text-4xl md:text-5xl text-secondary mb-8 leading-tight" data-i18n="letter.title">Gửi những đôi uyên ương sắp về chung một nhà,</h2>
-
-            <div class="relative mb-10">
-              <img src="https://images.unsplash.com/photo-1550005809-91ad75fb315f?auto=format&fit=crop&w=1200&q=80"
-                alt="Cô dâu cầm bó hoa pastel" data-i18n-alt="alt.letter" loading="lazy"
-                class="w-full aspect-[4/3] object-cover rounded-sm shadow-xl" />
-              <span class="hidden sm:block absolute -bottom-6 -right-6 w-32 h-32 border border-primary rounded-sm -z-10"></span>
-            </div>
 
             <div class="space-y-5 text-lg leading-relaxed text-muted">
               <p data-i18n="letter.p1">Mỗi đám cưới là một câu chuyện chỉ thuộc về riêng hai người. Ở Amoa, tụi mình không bắt đầu bằng một
@@ -255,64 +308,132 @@
             </div>
           </div>
 
-          <!-- Quy trình làm việc 6 bước — Timeline dọc -->
-          <div>
-            <p class="reveal text-xs font-semibold text-primary uppercase tracking-[0.15em] mb-4" data-i18n="process.eyebrow">Quy trình làm việc</p>
-            <h2 class="reveal text-4xl md:text-5xl mb-12 leading-tight" data-i18n="process.title">Sáu bước đến ngày trọng đại</h2>
+        </div>
+      </div>
 
-            <ol class="relative border-l border-line ml-3">
-              <!-- Bước 01 -->
-              <li class="reveal group relative pl-10 pb-12">
-                <span class="absolute -left-[7px] top-2 w-3.5 h-3.5 rounded-full bg-cream border-2 border-primary transition-colors group-hover:bg-primary"></span>
-                <span class="font-heading text-3xl text-accent">01</span>
-                <h3 class="text-2xl mt-1 mb-2 transition-colors group-hover:text-primary" data-i18n="step1.title">Gặp gỡ &amp; Lắng nghe</h3>
-                <p class="text-muted leading-relaxed" data-i18n="step1.desc">Một buổi trò chuyện thân mật để hiểu câu chuyện tình yêu, cá tính của hai bạn và mong muốn của gia đình.</p>
-              </li>
-              <!-- Bước 02 -->
-              <li class="reveal group relative pl-10 pb-12">
-                <span class="absolute -left-[7px] top-2 w-3.5 h-3.5 rounded-full bg-cream border-2 border-primary transition-colors group-hover:bg-primary"></span>
-                <span class="font-heading text-3xl text-accent">02</span>
-                <h3 class="text-2xl mt-1 mb-2 transition-colors group-hover:text-primary" data-i18n="step2.title">Phác thảo Concept</h3>
-                <p class="text-muted leading-relaxed" data-i18n="step2.desc">Xây dựng moodboard, bảng màu, chất liệu hoa và ngôn ngữ thiết kế mang dấu ấn riêng của hai bạn.</p>
-              </li>
-              <!-- Bước 03 -->
-              <li class="reveal group relative pl-10 pb-12">
-                <span class="absolute -left-[7px] top-2 w-3.5 h-3.5 rounded-full bg-cream border-2 border-primary transition-colors group-hover:bg-primary"></span>
-                <span class="font-heading text-3xl text-accent">03</span>
-                <h3 class="text-2xl mt-1 mb-2 transition-colors group-hover:text-primary" data-i18n="step3.title">Lên kế hoạch tổng thể</h3>
-                <p class="text-muted leading-relaxed" data-i18n="step3.desc">Lập timeline chuẩn bị, phân bổ ngân sách hợp lý và kết nối những nhà cung cấp phù hợp nhất.</p>
-              </li>
-              <!-- Bước 04 -->
-              <li class="reveal group relative pl-10 pb-12">
-                <span class="absolute -left-[7px] top-2 w-3.5 h-3.5 rounded-full bg-cream border-2 border-primary transition-colors group-hover:bg-primary"></span>
-                <span class="font-heading text-3xl text-accent">04</span>
-                <h3 class="text-2xl mt-1 mb-2 transition-colors group-hover:text-primary" data-i18n="step4.title">Thiết kế &amp; Hoàn thiện chi tiết</h3>
-                <p class="text-muted leading-relaxed" data-i18n="step4.desc">Bản vẽ bố trí không gian, phối cảnh, tuyển chọn hoa và chuẩn bị từng món đạo cụ, từng điểm chạm.</p>
-              </li>
-              <!-- Bước 05 -->
-              <li class="reveal group relative pl-10 pb-12">
-                <span class="absolute -left-[7px] top-2 w-3.5 h-3.5 rounded-full bg-cream border-2 border-primary transition-colors group-hover:bg-primary"></span>
-                <span class="font-heading text-3xl text-accent">05</span>
-                <h3 class="text-2xl mt-1 mb-2 transition-colors group-hover:text-primary" data-i18n="step5.title">Tổng duyệt</h3>
-                <p class="text-muted leading-relaxed" data-i18n="step5.desc">Chạy kịch bản chương trình, kiểm tra từng hạng mục và phân công đội ngũ để mọi thứ sẵn sàng.</p>
-              </li>
-              <!-- Bước 06 -->
-              <li class="reveal group relative pl-10">
-                <span class="absolute -left-[7px] top-2 w-3.5 h-3.5 rounded-full bg-cream border-2 border-primary transition-colors group-hover:bg-primary"></span>
-                <span class="font-heading text-3xl text-accent">06</span>
-                <h3 class="text-2xl mt-1 mb-2 transition-colors group-hover:text-primary" data-i18n="step6.title">Ngày trọng đại</h3>
-                <p class="text-muted leading-relaxed" data-i18n="step6.desc">Đội ngũ Amoa có mặt từ sớm, điều phối mọi khâu — để hai bạn chỉ việc trọn vẹn tận hưởng.</p>
-              </li>
-            </ol>
+      <!-- 1c. QUY TRÌNH 6 BƯỚC — Timeline ngang (mobile/tablet: vuốt ngang) -->
+      <div class="bg-card py-24 md:py-32">
+        <div class="container mx-auto px-4">
+          <div class="reveal text-center max-w-2xl mx-auto mb-16">
+            <p class="text-xs font-semibold text-primary uppercase tracking-[0.15em] mb-4" data-i18n="process.eyebrow">Quy trình làm việc</p>
+            <h2 class="text-4xl md:text-5xl leading-tight" data-i18n="process.title">Sáu bước đến ngày trọng đại</h2>
           </div>
 
+          <ol class="flex gap-6 overflow-x-auto snap-x snap-mandatory scroll-px-4 -mx-4 px-4 pb-4 lg:grid lg:grid-cols-6 lg:gap-8 lg:overflow-visible lg:mx-0 lg:px-0 lg:pb-0">
+            <!-- Bước 01 -->
+            <li class="reveal group relative snap-start shrink-0 w-[75%] sm:w-[42%] md:w-[30%] lg:w-auto">
+              <span class="absolute top-[7px] left-0 -right-6 lg:-right-8 h-px bg-line" aria-hidden="true"></span>
+              <span class="relative block w-3.5 h-3.5 rounded-full bg-card border-2 border-primary transition-colors group-hover:bg-primary"></span>
+              <span class="block font-heading text-4xl text-accent mt-6">01</span>
+              <h3 class="text-xl mt-2 mb-3 transition-colors group-hover:text-primary" data-i18n="step1.title">Gặp gỡ &amp; Lắng nghe</h3>
+              <p class="text-muted text-[15px] leading-relaxed" data-i18n="step1.desc">Một buổi trò chuyện thân mật để hiểu câu chuyện tình yêu, cá tính của hai bạn và mong muốn của gia đình.</p>
+            </li>
+            <!-- Bước 02 -->
+            <li class="reveal group relative snap-start shrink-0 w-[75%] sm:w-[42%] md:w-[30%] lg:w-auto">
+              <span class="absolute top-[7px] left-0 -right-6 lg:-right-8 h-px bg-line" aria-hidden="true"></span>
+              <span class="relative block w-3.5 h-3.5 rounded-full bg-card border-2 border-primary transition-colors group-hover:bg-primary"></span>
+              <span class="block font-heading text-4xl text-accent mt-6">02</span>
+              <h3 class="text-xl mt-2 mb-3 transition-colors group-hover:text-primary" data-i18n="step2.title">Phác thảo Concept</h3>
+              <p class="text-muted text-[15px] leading-relaxed" data-i18n="step2.desc">Xây dựng moodboard, bảng màu, chất liệu hoa và ngôn ngữ thiết kế mang dấu ấn riêng của hai bạn.</p>
+            </li>
+            <!-- Bước 03 -->
+            <li class="reveal group relative snap-start shrink-0 w-[75%] sm:w-[42%] md:w-[30%] lg:w-auto">
+              <span class="absolute top-[7px] left-0 -right-6 lg:-right-8 h-px bg-line" aria-hidden="true"></span>
+              <span class="relative block w-3.5 h-3.5 rounded-full bg-card border-2 border-primary transition-colors group-hover:bg-primary"></span>
+              <span class="block font-heading text-4xl text-accent mt-6">03</span>
+              <h3 class="text-xl mt-2 mb-3 transition-colors group-hover:text-primary" data-i18n="step3.title">Lên kế hoạch tổng thể</h3>
+              <p class="text-muted text-[15px] leading-relaxed" data-i18n="step3.desc">Lập timeline chuẩn bị, phân bổ ngân sách hợp lý và kết nối những nhà cung cấp phù hợp nhất.</p>
+            </li>
+            <!-- Bước 04 -->
+            <li class="reveal group relative snap-start shrink-0 w-[75%] sm:w-[42%] md:w-[30%] lg:w-auto">
+              <span class="absolute top-[7px] left-0 -right-6 lg:-right-8 h-px bg-line" aria-hidden="true"></span>
+              <span class="relative block w-3.5 h-3.5 rounded-full bg-card border-2 border-primary transition-colors group-hover:bg-primary"></span>
+              <span class="block font-heading text-4xl text-accent mt-6">04</span>
+              <h3 class="text-xl mt-2 mb-3 transition-colors group-hover:text-primary" data-i18n="step4.title">Thiết kế &amp; Hoàn thiện chi tiết</h3>
+              <p class="text-muted text-[15px] leading-relaxed" data-i18n="step4.desc">Bản vẽ bố trí không gian, phối cảnh, tuyển chọn hoa và chuẩn bị từng món đạo cụ, từng điểm chạm.</p>
+            </li>
+            <!-- Bước 05 -->
+            <li class="reveal group relative snap-start shrink-0 w-[75%] sm:w-[42%] md:w-[30%] lg:w-auto">
+              <span class="absolute top-[7px] left-0 -right-6 lg:-right-8 h-px bg-line" aria-hidden="true"></span>
+              <span class="relative block w-3.5 h-3.5 rounded-full bg-card border-2 border-primary transition-colors group-hover:bg-primary"></span>
+              <span class="block font-heading text-4xl text-accent mt-6">05</span>
+              <h3 class="text-xl mt-2 mb-3 transition-colors group-hover:text-primary" data-i18n="step5.title">Tổng duyệt</h3>
+              <p class="text-muted text-[15px] leading-relaxed" data-i18n="step5.desc">Chạy kịch bản chương trình, kiểm tra từng hạng mục và phân công đội ngũ để mọi thứ sẵn sàng.</p>
+            </li>
+            <!-- Bước 06 -->
+            <li class="reveal group relative snap-start shrink-0 w-[75%] sm:w-[42%] md:w-[30%] lg:w-auto">
+              <span class="relative block w-3.5 h-3.5 rounded-full bg-card border-2 border-primary transition-colors group-hover:bg-primary"></span>
+              <span class="block font-heading text-4xl text-accent mt-6">06</span>
+              <h3 class="text-xl mt-2 mb-3 transition-colors group-hover:text-primary" data-i18n="step6.title">Ngày trọng đại</h3>
+              <p class="text-muted text-[15px] leading-relaxed" data-i18n="step6.desc">Đội ngũ Amoa có mặt từ sớm, điều phối mọi khâu — để hai bạn chỉ việc trọn vẹn tận hưởng.</p>
+            </li>
+          </ol>
+        </div>
+      </div>
+
+      <!-- 1d. ĐỘI NGŨ CỦA CHÚNG TÔI — hàng ngang (mobile/tablet: vuốt ngang)
+           Tên + ảnh hiện là GIẢ LẬP. Thay ảnh: bỏ ảnh vào images/team/ rồi đổi src,
+           ví dụ src="images/team/xuyen.jpg", và sửa alt + tên + chức vụ tương ứng. -->
+      <div class="py-24 md:py-32">
+        <div class="container mx-auto px-4">
+          <div class="reveal text-center max-w-3xl mx-auto mb-16">
+            <p class="text-base md:text-lg font-semibold text-primary uppercase tracking-[0.25em] mb-4" data-i18n="team.eyebrow">Đội ngũ của chúng tôi</p>
+            <h2 class="text-4xl md:text-5xl leading-tight" data-i18n="team.title">Những người đồng hành cùng bạn</h2>
+          </div>
+
+          <ul class="flex gap-6 overflow-x-auto snap-x snap-mandatory scroll-px-4 -mx-4 px-4 pb-4 lg:grid lg:grid-cols-4 lg:gap-8 lg:max-w-[60rem] lg:overflow-visible lg:mx-auto lg:px-0 lg:pb-0">
+            <!-- Thành viên 1 -->
+            <li class="reveal group snap-start shrink-0 w-[55%] sm:w-[36%] md:w-[26%] lg:w-auto text-center">
+              <div class="relative aspect-[3/4] rounded-t-full overflow-hidden bg-card shadow-md ring-1 ring-line ring-offset-4 ring-offset-cream">
+                <!-- ẢNH GIẢ LẬP — thay bằng images/team/... -->
+                <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&crop=faces&w=600&h=800&q=80"
+                  alt="Vũ Trịnh Xuyên" loading="lazy"
+                  class="w-full h-full object-cover sepia-[.15] transition-transform duration-700 group-hover:scale-105" />
+              </div>
+              <h3 class="text-xl mt-5 transition-colors group-hover:text-primary">Vũ Trịnh Xuyên</h3>
+              <p class="text-[11px] tracking-[0.15em] uppercase text-muted mt-2" data-i18n="team.role1">Founder · Wedding Planner</p>
+            </li>
+            <!-- Thành viên 2 -->
+            <li class="reveal group snap-start shrink-0 w-[55%] sm:w-[36%] md:w-[26%] lg:w-auto text-center">
+              <div class="relative aspect-[3/4] rounded-t-full overflow-hidden bg-card shadow-md ring-1 ring-line ring-offset-4 ring-offset-cream">
+                <!-- ẢNH GIẢ LẬP — thay bằng images/team/... -->
+                <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&crop=faces&w=600&h=800&q=80"
+                  alt="Nguyễn Minh Anh" loading="lazy"
+                  class="w-full h-full object-cover sepia-[.15] transition-transform duration-700 group-hover:scale-105" />
+              </div>
+              <h3 class="text-xl mt-5 transition-colors group-hover:text-primary">Nguyễn Minh Anh</h3>
+              <p class="text-[11px] tracking-[0.15em] uppercase text-muted mt-2" data-i18n="team.role2">Floral Designer</p>
+            </li>
+            <!-- Thành viên 3 -->
+            <li class="reveal group snap-start shrink-0 w-[55%] sm:w-[36%] md:w-[26%] lg:w-auto text-center">
+              <div class="relative aspect-[3/4] rounded-t-full overflow-hidden bg-card shadow-md ring-1 ring-line ring-offset-4 ring-offset-cream">
+                <!-- ẢNH GIẢ LẬP — thay bằng images/team/... -->
+                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&crop=faces&w=600&h=800&q=80"
+                  alt="Trần Gia Huy" loading="lazy"
+                  class="w-full h-full object-cover sepia-[.15] transition-transform duration-700 group-hover:scale-105" />
+              </div>
+              <h3 class="text-xl mt-5 transition-colors group-hover:text-primary">Trần Gia Huy</h3>
+              <p class="text-[11px] tracking-[0.15em] uppercase text-muted mt-2" data-i18n="team.role3">Wedding Coordinator</p>
+            </li>
+            <!-- Thành viên 4 -->
+            <li class="reveal group snap-start shrink-0 w-[55%] sm:w-[36%] md:w-[26%] lg:w-auto text-center">
+              <div class="relative aspect-[3/4] rounded-t-full overflow-hidden bg-card shadow-md ring-1 ring-line ring-offset-4 ring-offset-cream">
+                <!-- ẢNH GIẢ LẬP — thay bằng images/team/... -->
+                <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&crop=faces&w=600&h=800&q=80"
+                  alt="Lê Thảo Vy" loading="lazy"
+                  class="w-full h-full object-cover sepia-[.15] transition-transform duration-700 group-hover:scale-105" />
+              </div>
+              <h3 class="text-xl mt-5 transition-colors group-hover:text-primary">Lê Thảo Vy</h3>
+              <p class="text-[11px] tracking-[0.15em] uppercase text-muted mt-2" data-i18n="team.role4">Decor Stylist</p>
+            </li>
+          </ul>
         </div>
       </div>
     </section>
 
     <!-- =====================================================================
          SECTION 2 — PORTFOLIO (Masonry + lọc theo tab)
-         Mỗi ảnh có data-category: giatien | ngoaitroi | nhahang
+         Mỗi ảnh có data-category: ngoaitroi | nhahang | giatien | cauhon
          Ảnh & tên dự án hiện là placeholder — thay bằng dự án thật của Amoa.
          ===================================================================== -->
     <section id="portfolio" class="bg-white/60 py-24 md:py-32">
@@ -327,10 +448,10 @@
 
         <!-- Tab lọc -->
         <div class="reveal flex flex-wrap justify-center gap-x-8 gap-y-3 mb-14 font-heading" role="tablist" aria-label="Lọc dự án" data-i18n-aria="pf.filterAria">
-          <button class="filter-btn text-base tracking-widest pb-1 border-b-2 transition-colors text-primary border-primary" data-filter="all" role="tab" aria-selected="true" data-i18n="pf.all">Tất cả</button>
-          <button class="filter-btn text-base tracking-widest pb-1 border-b-2 transition-colors text-muted border-transparent hover:text-primary" data-filter="giatien" role="tab" aria-selected="false" data-i18n="cat.giatien">Gia Tiên</button>
-          <button class="filter-btn text-base tracking-widest pb-1 border-b-2 transition-colors text-muted border-transparent hover:text-primary" data-filter="ngoaitroi" role="tab" aria-selected="false" data-i18n="cat.ngoaitroi">Tiệc Ngoài Trời</button>
+          <button class="filter-btn text-base tracking-widest pb-1 border-b-2 transition-colors text-primary border-primary" data-filter="ngoaitroi" role="tab" aria-selected="true" data-i18n="cat.ngoaitroi">Tiệc Ngoài Trời</button>
           <button class="filter-btn text-base tracking-widest pb-1 border-b-2 transition-colors text-muted border-transparent hover:text-primary" data-filter="nhahang" role="tab" aria-selected="false" data-i18n="cat.nhahang">Tiệc Nhà Hàng</button>
+          <button class="filter-btn text-base tracking-widest pb-1 border-b-2 transition-colors text-muted border-transparent hover:text-primary" data-filter="giatien" role="tab" aria-selected="false" data-i18n="cat.giatien">Gia Tiên</button>
+          <button class="filter-btn text-base tracking-widest pb-1 border-b-2 transition-colors text-muted border-transparent hover:text-primary" data-filter="cauhon" role="tab" aria-selected="false" data-i18n="cat.cauhon">Cầu Hôn</button>
         </div>
 
         <!-- Masonry grid (CSS columns): 1 cột mobile, 2 cột tablet, 3 cột desktop -->
@@ -408,6 +529,30 @@
             </figcaption>
           </figure>
 
+          <figure class="work-item group relative mb-6 break-inside-avoid overflow-hidden rounded-sm" data-category="cauhon">
+            <img src="https://images.unsplash.com/photo-1513278974582-3e1b4a4fa21e?auto=format&fit=crop&w=900&q=80" alt="Căn phòng cầu hôn với nến và cánh hoa hồng" data-i18n-alt="alt.work10" loading="lazy" class="w-full aspect-[4/3] object-cover transition-transform duration-700 group-hover:scale-105" />
+            <figcaption class="absolute inset-0 flex flex-col justify-end p-6 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 text-white">
+              <span class="text-[11px] tracking-[0.25em] uppercase text-white/70" data-i18n="cat.cauhon">Cầu Hôn</span>
+              <span class="font-heading text-2xl" data-i18n="work10.name">Candlelit Proposal · Đà Nẵng</span>
+            </figcaption>
+          </figure>
+
+          <figure class="work-item group relative mb-6 break-inside-avoid overflow-hidden rounded-sm" data-category="cauhon">
+            <img src="https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&w=900&q=80" alt="Nhẫn cầu hôn đính đá" data-i18n-alt="alt.work11" loading="lazy" class="w-full aspect-[1/1] object-cover transition-transform duration-700 group-hover:scale-105" />
+            <figcaption class="absolute inset-0 flex flex-col justify-end p-6 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 text-white">
+              <span class="text-[11px] tracking-[0.25em] uppercase text-white/70" data-i18n="cat.cauhon">Cầu Hôn</span>
+              <span class="font-heading text-2xl" data-i18n="work11.name">The Ring · Hội An</span>
+            </figcaption>
+          </figure>
+
+          <figure class="work-item group relative mb-6 break-inside-avoid overflow-hidden rounded-sm" data-category="cauhon">
+            <img src="https://images.unsplash.com/photo-1494774157365-9e04c6720e47?auto=format&fit=crop&w=900&q=80" alt="Cặp đôi ôm nhau trong hoàng hôn" data-i18n-alt="alt.work12" loading="lazy" class="w-full aspect-[3/4] object-cover transition-transform duration-700 group-hover:scale-105" />
+            <figcaption class="absolute inset-0 flex flex-col justify-end p-6 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 text-white">
+              <span class="text-[11px] tracking-[0.25em] uppercase text-white/70" data-i18n="cat.cauhon">Cầu Hôn</span>
+              <span class="font-heading text-2xl" data-i18n="work12.name">Sunset Promise · Sơn Trà</span>
+            </figcaption>
+          </figure>
+
         </div>
       </div>
     </section>
@@ -420,153 +565,40 @@
       <div class="container mx-auto px-4">
 
         <!-- Tiêu đề section -->
-        <div class="reveal max-w-3xl mb-20">
+        <div class="reveal max-w-3xl mb-14">
           <p class="text-xs font-semibold text-primary uppercase tracking-[0.15em] mb-4">Services</p>
           <h2 class="text-5xl md:text-7xl text-secondary mb-6" data-i18n="sv.title">Dịch vụ</h2>
           <p class="text-xl text-muted leading-relaxed" data-i18n="sv.desc">Hai nhóm dịch vụ cốt lõi — có thể chọn riêng lẻ hoặc kết hợp — để mỗi đám cưới được may đo vừa vặn với câu chuyện của bạn.</p>
         </div>
 
-        <!-- ---------- NHÓM 1 — WEDDING PLANNING (Card) ---------- -->
-        <div class="reveal flex flex-col md:flex-row md:items-end md:justify-between gap-4 pb-6 mb-10 border-b border-line">
-          <div>
-            <span class="font-heading text-4xl text-accent">01</span>
-            <h3 class="text-3xl md:text-4xl">Wedding Planning</h3>
-          </div>
-          <p class="text-muted max-w-md" data-i18n="sv.g1.desc">Lên kế hoạch và điều phối — từ ý tưởng đầu tiên đến lời chúc cuối cùng của buổi tiệc.</p>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 mb-28">
-          <!-- Gói Toàn phần -->
-          <article class="reveal bg-card rounded-xl p-8 md:p-10 flex flex-col transition-transform duration-300 hover:-translate-y-1">
-            <p class="text-xs tracking-[0.2em] uppercase text-primary mb-3">Full Planning</p>
-            <h4 class="text-3xl mb-4" data-i18n="full.title">Gói Toàn phần</h4>
-            <p class="text-muted leading-relaxed mb-6" data-i18n="full.desc">Amoa đồng hành trọn vẹn từ ngày đầu tiên đến khi tiệc khép lại, để hai bạn an tâm tận hưởng hành trình.</p>
-            <ul class="mt-auto space-y-3 text-[15px] text-ink">
-              <li class="flex gap-3"><span class="w-1.5 h-1.5 rounded-full bg-primary mt-2 shrink-0"></span><span data-i18n="full.i1">Tư vấn ý tưởng &amp; concept tổng thể</span></li>
-              <li class="flex gap-3"><span class="w-1.5 h-1.5 rounded-full bg-primary mt-2 shrink-0"></span><span data-i18n="full.i2">Lập kế hoạch, timeline &amp; phân bổ ngân sách</span></li>
-              <li class="flex gap-3"><span class="w-1.5 h-1.5 rounded-full bg-primary mt-2 shrink-0"></span><span data-i18n="full.i3">Tuyển chọn &amp; làm việc với nhà cung cấp</span></li>
-              <li class="flex gap-3"><span class="w-1.5 h-1.5 rounded-full bg-primary mt-2 shrink-0"></span><span data-i18n="full.i4">Thiết kế, trang trí &amp; điều phối ngày cưới</span></li>
-            </ul>
-          </article>
-
-          <!-- Gói Bán phần -->
-          <article class="reveal bg-card rounded-xl p-8 md:p-10 flex flex-col transition-transform duration-300 hover:-translate-y-1">
-            <p class="text-xs tracking-[0.2em] uppercase text-primary mb-3">Partial Planning</p>
-            <h4 class="text-3xl mb-4" data-i18n="partial.title">Gói Bán phần</h4>
-            <p class="text-muted leading-relaxed mb-6" data-i18n="partial.desc">Dành cho cặp đôi đã chuẩn bị một phần — Amoa tiếp nối và hoàn thiện những hạng mục còn lại.</p>
-            <ul class="mt-auto space-y-3 text-[15px] text-ink">
-              <li class="flex gap-3"><span class="w-1.5 h-1.5 rounded-full bg-primary mt-2 shrink-0"></span><span data-i18n="partial.i1">Rà soát &amp; tối ưu kế hoạch hiện có</span></li>
-              <li class="flex gap-3"><span class="w-1.5 h-1.5 rounded-full bg-primary mt-2 shrink-0"></span><span data-i18n="partial.i2">Hoàn thiện các hạng mục còn thiếu</span></li>
-              <li class="flex gap-3"><span class="w-1.5 h-1.5 rounded-full bg-primary mt-2 shrink-0"></span><span data-i18n="partial.i3">Kết nối nhà cung cấp bổ sung</span></li>
-              <li class="flex gap-3"><span class="w-1.5 h-1.5 rounded-full bg-primary mt-2 shrink-0"></span><span data-i18n="partial.i4">Điều phối trong ngày cưới</span></li>
-            </ul>
-          </article>
-
-          <!-- Đội ngũ điều phối -->
-          <article class="reveal bg-card rounded-xl p-8 md:p-10 flex flex-col transition-transform duration-300 hover:-translate-y-1">
-            <p class="text-xs tracking-[0.2em] uppercase text-primary mb-3">Day-of Coordination</p>
-            <h4 class="text-3xl mb-4" data-i18n="dayof.title">Đội ngũ điều phối</h4>
-            <p class="text-muted leading-relaxed mb-6" data-i18n="dayof.desc">Hai bạn đã tự lên kế hoạch — Amoa đảm bảo mọi thứ diễn ra trơn tru đúng như kịch bản.</p>
-            <ul class="mt-auto space-y-3 text-[15px] text-ink">
-              <li class="flex gap-3"><span class="w-1.5 h-1.5 rounded-full bg-primary mt-2 shrink-0"></span><span data-i18n="dayof.i1">Tiếp nhận kế hoạch trước ngày cưới</span></li>
-              <li class="flex gap-3"><span class="w-1.5 h-1.5 rounded-full bg-primary mt-2 shrink-0"></span><span data-i18n="dayof.i2">Khảo sát địa điểm &amp; tổng duyệt</span></li>
-              <li class="flex gap-3"><span class="w-1.5 h-1.5 rounded-full bg-primary mt-2 shrink-0"></span><span data-i18n="dayof.i3">Điều phối nghi lễ, tiệc &amp; nhà cung cấp</span></li>
-              <li class="flex gap-3"><span class="w-1.5 h-1.5 rounded-full bg-primary mt-2 shrink-0"></span><span data-i18n="dayof.i4">Xử lý phát sinh để hai bạn an tâm</span></li>
-            </ul>
-          </article>
-        </div>
-
-        <!-- ---------- NHÓM 2 — FLORAL & SPATIAL DESIGN (Ảnh + Accordion) ---------- -->
-        <div class="reveal flex flex-col md:flex-row md:items-end md:justify-between gap-4 pb-6 mb-10 border-b border-line">
-          <div>
-            <span class="font-heading text-4xl text-accent">02</span>
-            <h3 class="text-3xl md:text-4xl">Floral &amp; Spatial Design</h3>
-          </div>
-          <p class="text-muted max-w-md" data-i18n="sv.g2.desc">Không có mẫu dựng sẵn — mỗi không gian được thiết kế riêng theo concept, địa điểm và câu chuyện của bạn.</p>
-        </div>
-
-        <div class="grid lg:grid-cols-5 gap-12 lg:gap-16 items-start">
-          <!-- Ảnh minh hoạ -->
-          <div class="reveal lg:col-span-2 relative">
-            <img src="https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?auto=format&fit=crop&w=1000&q=80"
-              alt="Không gian tiệc cưới được thiết kế hoa" data-i18n-alt="alt.floral" loading="lazy"
-              class="w-full aspect-[4/5] object-cover rounded-sm shadow-xl" />
-            <p class="mt-6 font-heading text-2xl text-secondary leading-snug" data-i18n="sv.quote">“Hoa không chỉ để trang trí — hoa là cách kể chuyện.”</p>
-          </div>
-
-          <!-- Accordion -->
-          <div class="lg:col-span-3 border-t border-line" id="accordion">
-
-            <!-- Gói Gia Tiên (mở sẵn) -->
-            <div class="acc-item is-open border-b border-line">
-              <button class="acc-trigger w-full flex items-center justify-between gap-6 py-7 text-left group" aria-expanded="true">
-                <span class="flex items-baseline gap-5">
-                  <span class="font-heading text-xl text-accent">01</span>
-                  <span class="font-heading text-2xl md:text-3xl group-hover:text-primary transition-colors" data-i18n="acc1.title">Gói Gia Tiên</span>
-                </span>
-                <span class="acc-icon text-primary text-3xl leading-none transition-transform duration-300">+</span>
-              </button>
-              <div class="acc-panel"><div class="overflow-hidden">
-                <div class="pb-8 pl-0 md:pl-11 text-muted leading-relaxed">
-                  <p class="mb-4" data-i18n="acc1.desc">Kiến tạo không gian lễ gia tiên tại tư gia — hài hoà nét trang nghiêm truyền thống với thẩm mỹ đương đại, theo bảng màu và câu chuyện riêng của hai gia đình.</p>
-                  <p class="text-sm tracking-wide text-muted" data-i18n="acc1.items">Bàn thờ gia tiên · Cổng hoa · Phông nền · Bàn tiếp khách · Lối đi &amp; ánh sáng</p>
-                </div>
-              </div></div>
+        <!-- 2 lối vào: mở trang Planning / Decoration (xem các khối .pkg-page cuối trang) -->
+        <div class="grid md:grid-cols-2 gap-6 lg:gap-8">
+          <a href="#planning" class="reveal group relative block aspect-[4/3] overflow-hidden rounded-xl shadow-lg">
+            <img src="https://images.unsplash.com/photo-1591604466107-ec97de577aff?auto=format&fit=crop&w=1200&q=80" alt="Cô dâu chú rể cầm bó hoa cưới" data-i18n-alt="alt.full.cover" loading="lazy"
+              class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-black/5"></div>
+            <div class="absolute inset-x-0 bottom-0 p-8 md:p-10 text-white">
+              <p class="text-xs tracking-[0.25em] uppercase text-white/75 mb-2">Planning</p>
+              <h3 class="text-4xl md:text-5xl mb-3" data-i18n="nav.planning">Lên kế hoạch</h3>
+              <p class="text-white/80 leading-relaxed max-w-md mb-6" data-i18n="sv.g1.desc">Lên kế hoạch và điều phối — từ ý tưởng đầu tiên đến lời chúc cuối cùng của buổi tiệc.</p>
+              <span class="inline-flex items-center gap-3 text-xs tracking-[0.2em] uppercase border-b border-white/50 pb-1 transition-colors group-hover:border-white">
+                <span data-i18n="pkg.more">Xem chi tiết</span><span aria-hidden="true" class="transition-transform group-hover:translate-x-1">→</span>
+              </span>
             </div>
-
-            <!-- Gói Tiệc Ngoài Trời -->
-            <div class="acc-item border-b border-line">
-              <button class="acc-trigger w-full flex items-center justify-between gap-6 py-7 text-left group" aria-expanded="false">
-                <span class="flex items-baseline gap-5">
-                  <span class="font-heading text-xl text-accent">02</span>
-                  <span class="font-heading text-2xl md:text-3xl group-hover:text-primary transition-colors" data-i18n="acc2.title">Gói Tiệc Ngoài Trời</span>
-                </span>
-                <span class="acc-icon text-primary text-3xl leading-none transition-transform duration-300">+</span>
-              </button>
-              <div class="acc-panel"><div class="overflow-hidden">
-                <div class="pb-8 pl-0 md:pl-11 text-muted leading-relaxed">
-                  <p class="mb-4" data-i18n="acc2.desc">Garden, bãi biển hay resort — thiết kế tổng thể dựa trên cảnh quan sẵn có, để thiên nhiên và hoa cùng kể câu chuyện của bạn. Luôn kèm phương án dự phòng thời tiết.</p>
-                  <p class="text-sm tracking-wide text-muted" data-i18n="acc2.items">Cổng lễ · Lối đi · Bàn tiệc &amp; centerpiece · Ánh sáng đêm · Khu đón khách</p>
-                </div>
-              </div></div>
+          </a>
+          <a href="#decoration" class="reveal group relative block aspect-[4/3] overflow-hidden rounded-xl shadow-lg">
+            <img src="https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?auto=format&fit=crop&w=1200&q=80" alt="Không gian tiệc cưới được thiết kế hoa" data-i18n-alt="alt.floral" loading="lazy"
+              class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-black/5"></div>
+            <div class="absolute inset-x-0 bottom-0 p-8 md:p-10 text-white">
+              <p class="text-xs tracking-[0.25em] uppercase text-white/75 mb-2">Decoration</p>
+              <h3 class="text-4xl md:text-5xl mb-3" data-i18n="nav.decor">Trang trí</h3>
+              <p class="text-white/80 leading-relaxed max-w-md mb-6" data-i18n="sv.g2.desc">Không có mẫu dựng sẵn — mỗi không gian được thiết kế riêng theo concept, địa điểm và câu chuyện của bạn.</p>
+              <span class="inline-flex items-center gap-3 text-xs tracking-[0.2em] uppercase border-b border-white/50 pb-1 transition-colors group-hover:border-white">
+                <span data-i18n="pkg.more">Xem chi tiết</span><span aria-hidden="true" class="transition-transform group-hover:translate-x-1">→</span>
+              </span>
             </div>
-
-            <!-- Gói Nhà Hàng -->
-            <div class="acc-item border-b border-line">
-              <button class="acc-trigger w-full flex items-center justify-between gap-6 py-7 text-left group" aria-expanded="false">
-                <span class="flex items-baseline gap-5">
-                  <span class="font-heading text-xl text-accent">03</span>
-                  <span class="font-heading text-2xl md:text-3xl group-hover:text-primary transition-colors" data-i18n="acc3.title">Gói Nhà Hàng</span>
-                </span>
-                <span class="acc-icon text-primary text-3xl leading-none transition-transform duration-300">+</span>
-              </button>
-              <div class="acc-panel"><div class="overflow-hidden">
-                <div class="pb-8 pl-0 md:pl-11 text-muted leading-relaxed">
-                  <p class="mb-4" data-i18n="acc3.desc">Biến sảnh tiệc quen thuộc thành không gian mang dấu ấn riêng — tuỳ biến theo kiến trúc sảnh, số lượng khách và concept hai bạn lựa chọn.</p>
-                  <p class="text-sm tracking-wide text-muted" data-i18n="acc3.items">Sân khấu &amp; backdrop · Bàn tiệc · Centerpiece · Khu check-in · Bàn gallery</p>
-                </div>
-              </div></div>
-            </div>
-
-            <!-- Hạng mục thiết kế lẻ -->
-            <div class="acc-item border-b border-line">
-              <button class="acc-trigger w-full flex items-center justify-between gap-6 py-7 text-left group" aria-expanded="false">
-                <span class="flex items-baseline gap-5">
-                  <span class="font-heading text-xl text-accent">04</span>
-                  <span class="font-heading text-2xl md:text-3xl group-hover:text-primary transition-colors" data-i18n="acc4.title">Hạng mục thiết kế lẻ</span>
-                </span>
-                <span class="acc-icon text-primary text-3xl leading-none transition-transform duration-300">+</span>
-              </button>
-              <div class="acc-panel"><div class="overflow-hidden">
-                <div class="pb-8 pl-0 md:pl-11 text-muted leading-relaxed">
-                  <p class="mb-4" data-i18n="acc4.desc">Chỉ cần một vài điểm nhấn? Amoa nhận thiết kế từng hạng mục riêng, vẫn giữ trọn tinh thần đồng bộ với concept chung.</p>
-                  <p class="text-sm tracking-wide text-muted" data-i18n="acc4.items">Hoa cầm tay · Hoa cài áo · Xe hoa · Photobooth · Bảng chào mừng · Hoa bàn tiệc</p>
-                </div>
-              </div></div>
-            </div>
-
-            <p class="pt-8 text-sm text-muted" data-i18n="sv.note">Mỗi đề xuất được cá nhân hoá theo concept và quy mô — liên hệ Amoa để nhận tư vấn chi tiết.</p>
-          </div>
+          </a>
         </div>
 
       </div>
@@ -602,6 +634,13 @@
           </div>
         </div>
 
+        <!-- Nút chính: mở form đặt lịch -->
+        <div class="reveal mb-6">
+          <a href="#dat-lich" class="inline-flex items-center justify-center gap-3 rounded-full bg-ink hover:bg-primary text-cream px-10 h-14 text-lg tracking-wide transition-colors duration-300">
+            <span data-i18n="ct.form">Điền form đặt lịch tư vấn</span><span aria-hidden="true">→</span>
+          </a>
+        </div>
+
         <!-- 3 nút CTA -->
         <div class="reveal flex flex-col sm:flex-row justify-center gap-4 max-w-3xl mx-auto">
           <a href="https://zalo.me/0867562074" target="_blank" rel="noopener"
@@ -626,13 +665,804 @@
   </main>
 
   <!-- =====================================================================
+       FORM ĐẶT LỊCH TƯ VẤN (lớp phủ toàn màn hình) — mở bằng link #dat-lich
+       Nơi nhận dữ liệu: xem biến FORM_ENDPOINT trong phần SCRIPT (mục 6c).
+       ===================================================================== -->
+  <div id="dat-lich" class="pkg-page fixed inset-0 z-[60] bg-cream overflow-y-auto" role="dialog" aria-modal="true" aria-labelledby="dat-lich-title" aria-hidden="true">
+    <div class="sticky top-0 z-10 header-glass border-b border-black/10">
+      <div class="container mx-auto px-4 h-16 md:h-20 flex items-center justify-between">
+        <a href="#" class="pkg-back bk-close inline-flex items-center gap-3 text-sm tracking-widest uppercase text-ink hover:text-primary transition-colors">
+          <span aria-hidden="true">←</span><span data-i18n="bk.back">Quay lại</span>
+        </a>
+        <img src="images/logo-amoa.png" alt="Amoa" width="472" height="146" class="h-9 md:h-11 w-auto" />
+        <a href="#" class="bk-close w-10 h-10 inline-flex items-center justify-center rounded-full border border-line text-ink hover:text-primary hover:border-primary transition-colors" aria-label="Đóng" data-i18n-aria="pkg.close">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" /></svg>
+        </a>
+      </div>
+    </div>
+
+    <div class="container mx-auto px-4 py-14 md:py-20">
+      <div class="max-w-3xl mx-auto">
+        <!-- Tiêu đề -->
+        <div class="text-center mb-12 md:mb-16">
+          <p class="text-xs font-semibold text-primary uppercase tracking-[0.2em] mb-4" data-i18n="bk.eyebrow">Form thông tin dịch vụ</p>
+          <h2 id="dat-lich-title" class="text-4xl md:text-6xl leading-tight mb-5" data-i18n="cta.book">Đặt lịch tư vấn</h2>
+          <p class="text-lg text-muted leading-relaxed max-w-xl mx-auto" data-i18n="bk.intro">Chia sẻ đôi chút về ngày trọng đại của hai bạn — chỉ mất khoảng 3 phút. Amoa sẽ liên hệ lại để hẹn buổi tư vấn.</p>
+        </div>
+
+        <form id="booking-form" class="bg-card/0" novalidate>
+          <fieldset class="border-t border-line pt-10 mt-10 first:border-t-0 first:pt-0 first:mt-0">
+            <legend class="contents">
+              <span class="flex items-baseline gap-4 mb-8">
+                <span class="font-heading text-3xl text-accent">01</span>
+                <span class="font-heading text-3xl md:text-4xl text-ink" data-i18n="bk.s1">Thông tin cơ bản</span>
+              </span>
+            </legend>
+            <div class="grid sm:grid-cols-2 gap-6">
+              <div>
+                <label for="bk-name" class="block text-sm font-semibold text-ink mb-2"><span data-i18n="bk.name">Họ và tên</span> <span class="text-primary" aria-hidden="true">*</span></label>
+                <input id="bk-name" name="Họ tên" type="text" class="w-full bg-white/70 border border-line rounded-lg px-4 h-12 text-ink placeholder:text-muted/60 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors" placeholder="Ví dụ: Nguyễn Minh Anh" data-i18n-ph="bk.name.ph" required autocomplete="name" />
+              </div>
+              <div>
+                <label for="bk-phone" class="block text-sm font-semibold text-ink mb-2"><span data-i18n="bk.phone">Số điện thoại (Zalo / WhatsApp)</span> <span class="text-primary" aria-hidden="true">*</span></label>
+                <input id="bk-phone" name="Điện thoại (Zalo/WhatsApp)" type="tel" class="w-full bg-white/70 border border-line rounded-lg px-4 h-12 text-ink placeholder:text-muted/60 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors" placeholder="09xx xxx xxx" data-i18n-ph="bk.phone.ph" required autocomplete="tel" pattern="[0-9+ ().-]{8,}" />
+              </div>
+              <div>
+                <label for="bk-email" class="block text-sm font-semibold text-ink mb-2"><span data-i18n="bk.email">Email (không bắt buộc)</span></label>
+                <input id="bk-email" name="Email" type="email" class="w-full bg-white/70 border border-line rounded-lg px-4 h-12 text-ink placeholder:text-muted/60 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors" placeholder="ban@email.com" data-i18n-ph="bk.email.ph" autocomplete="email" />
+              </div>
+              <div>
+                <label for="bk-date" class="block text-sm font-semibold text-ink mb-2"><span data-i18n="bk.date">Ngày tổ chức</span></label>
+                <input id="bk-date" name="Ngày tổ chức" type="date" class="w-full bg-white/70 border border-line rounded-lg px-4 h-12 text-ink placeholder:text-muted/60 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors" />
+                <label class="mt-2 inline-flex items-center gap-2 text-sm text-muted cursor-pointer">
+                  <input id="bk-date-tbd" type="checkbox" name="Chưa chốt ngày" value="Có" class="w-4 h-4 accent-[var(--primary-color)]" />
+                  <span data-i18n="bk.dateTbd">Chưa chốt ngày</span>
+                </label>
+              </div>
+              <div>
+                <label for="bk-place" class="block text-sm font-semibold text-ink mb-2"><span data-i18n="bk.place">Địa điểm / Thành phố</span></label>
+                <input id="bk-place" name="Địa điểm / Thành phố" type="text" class="w-full bg-white/70 border border-line rounded-lg px-4 h-12 text-ink placeholder:text-muted/60 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors" placeholder="Ví dụ: Hội An, resort ven biển…" data-i18n-ph="bk.place.ph" />
+              </div>
+              <div>
+                <label for="bk-guests" class="block text-sm font-semibold text-ink mb-2"><span data-i18n="bk.guests">Số lượng khách mời</span></label>
+                <div class="relative">
+                  <select id="bk-guests" name="Số lượng khách" class="w-full bg-white/70 border border-line rounded-lg px-4 h-12 text-ink placeholder:text-muted/60 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors appearance-none pr-10 cursor-pointer">
+                  <option value="" data-i18n="bk.choose">— Chọn —</option>
+                  <option value="Dưới 50 khách" data-i18n="bk.g1">Dưới 50 khách</option>
+                  <option value="50 – 100 khách" data-i18n="bk.g2">50 – 100 khách</option>
+                  <option value="100 – 200 khách" data-i18n="bk.g3">100 – 200 khách</option>
+                  <option value="200 – 300 khách" data-i18n="bk.g4">200 – 300 khách</option>
+                  <option value="Trên 300 khách" data-i18n="bk.g5">Trên 300 khách</option>
+                  <option value="Chưa rõ" data-i18n="bk.g6">Chưa rõ</option>
+                  </select>
+                  <svg class="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
+                </div>
+              </div>
+            </div>
+          </fieldset>
+          <fieldset class="border-t border-line pt-10 mt-10 first:border-t-0 first:pt-0 first:mt-0">
+            <legend class="contents">
+              <span class="flex items-baseline gap-4 mb-8">
+                <span class="font-heading text-3xl text-accent">02</span>
+                <span class="font-heading text-3xl md:text-4xl text-ink" data-i18n="bk.s2">Dịch vụ quan tâm</span>
+              </span>
+            </legend>
+            <div class="space-y-8">
+              <div>
+                <p class="block text-sm font-semibold text-ink mb-2" data-i18n="bk.events">Sự kiện cần hỗ trợ</p>
+                <p class="text-sm text-muted -mt-1 mb-4" data-i18n="bk.multi">Có thể chọn nhiều mục</p>
+                <div class="flex flex-wrap gap-3">
+                  <label class="relative"><input type="checkbox" name="Sự kiện" value="Cầu hôn" class="peer sr-only" /><span class="inline-flex items-center gap-2 px-5 h-11 rounded-full border border-line bg-white/70 text-ink cursor-pointer transition-colors peer-checked:bg-primary peer-checked:border-primary peer-checked:text-white peer-focus-visible:ring-2 peer-focus-visible:ring-primary hover:border-primary" data-i18n="bk.e1">Cầu hôn</span></label>
+                  <label class="relative"><input type="checkbox" name="Sự kiện" value="Lễ Gia tiên" class="peer sr-only" /><span class="inline-flex items-center gap-2 px-5 h-11 rounded-full border border-line bg-white/70 text-ink cursor-pointer transition-colors peer-checked:bg-primary peer-checked:border-primary peer-checked:text-white peer-focus-visible:ring-2 peer-focus-visible:ring-primary hover:border-primary" data-i18n="bk.e2">Lễ Gia tiên</span></label>
+                  <label class="relative"><input type="checkbox" name="Sự kiện" value="Đám cưới" class="peer sr-only" /><span class="inline-flex items-center gap-2 px-5 h-11 rounded-full border border-line bg-white/70 text-ink cursor-pointer transition-colors peer-checked:bg-primary peer-checked:border-primary peer-checked:text-white peer-focus-visible:ring-2 peer-focus-visible:ring-primary hover:border-primary" data-i18n="bk.e3">Đám cưới</span></label>
+                  <label class="relative"><input type="checkbox" name="Sự kiện" value="Tiệc ngoài trời" class="peer sr-only" /><span class="inline-flex items-center gap-2 px-5 h-11 rounded-full border border-line bg-white/70 text-ink cursor-pointer transition-colors peer-checked:bg-primary peer-checked:border-primary peer-checked:text-white peer-focus-visible:ring-2 peer-focus-visible:ring-primary hover:border-primary" data-i18n="bk.e4">Tiệc ngoài trời</span></label>
+                  <label class="relative"><input type="checkbox" name="Sự kiện" value="Sự kiện khác" class="peer sr-only" id="bk-event-other" /><span class="inline-flex items-center gap-2 px-5 h-11 rounded-full border border-line bg-white/70 text-ink cursor-pointer transition-colors peer-checked:bg-primary peer-checked:border-primary peer-checked:text-white peer-focus-visible:ring-2 peer-focus-visible:ring-primary hover:border-primary" data-i18n="bk.e5">Sự kiện khác</span></label>
+                </div>
+                <input id="bk-event-other-text" name="Sự kiện khác (mô tả)" type="text" class="w-full bg-white/70 border border-line rounded-lg px-4 h-12 text-ink placeholder:text-muted/60 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors mt-4 hidden" placeholder="Sự kiện của bạn là gì?" data-i18n-ph="bk.eOther.ph" />
+              </div>
+              <div>
+                <p class="block text-sm font-semibold text-ink mb-2" data-i18n="bk.pkg">Gói dịch vụ mong muốn</p>
+                <div class="grid sm:grid-cols-2 gap-3 mt-4">
+                  <label class="relative">
+                    <input type="radio" name="Gói dịch vụ" value="Lên kế hoạch &amp; Tổ chức" class="peer sr-only" />
+                    <span class="flex flex-col h-full p-5 rounded-xl border border-line bg-white/70 cursor-pointer transition-colors hover:border-primary peer-checked:border-primary peer-checked:bg-card peer-checked:ring-1 peer-checked:ring-primary peer-focus-visible:ring-2 peer-focus-visible:ring-primary">
+                      <span class="text-[11px] tracking-[0.2em] uppercase text-primary mb-1">Planning</span>
+                      <span class="font-heading text-xl text-ink" data-i18n="bk.p1">Lên kế hoạch &amp; Tổ chức</span>
+                    </span>
+                  </label>
+                  <label class="relative">
+                    <input type="radio" name="Gói dịch vụ" value="Thiết kế &amp; Trang trí" class="peer sr-only" />
+                    <span class="flex flex-col h-full p-5 rounded-xl border border-line bg-white/70 cursor-pointer transition-colors hover:border-primary peer-checked:border-primary peer-checked:bg-card peer-checked:ring-1 peer-checked:ring-primary peer-focus-visible:ring-2 peer-focus-visible:ring-primary">
+                      <span class="text-[11px] tracking-[0.2em] uppercase text-primary mb-1">Decoration</span>
+                      <span class="font-heading text-xl text-ink" data-i18n="bk.p2">Thiết kế &amp; Trang trí</span>
+                    </span>
+                  </label>
+                  <label class="relative">
+                    <input type="radio" name="Gói dịch vụ" value="Trọn gói cả hai" class="peer sr-only" />
+                    <span class="flex flex-col h-full p-5 rounded-xl border border-line bg-white/70 cursor-pointer transition-colors hover:border-primary peer-checked:border-primary peer-checked:bg-card peer-checked:ring-1 peer-checked:ring-primary peer-focus-visible:ring-2 peer-focus-visible:ring-primary">
+                      <span class="text-[11px] tracking-[0.2em] uppercase text-primary mb-1">Full-package</span>
+                      <span class="font-heading text-xl text-ink" data-i18n="bk.p3">Trọn gói cả hai</span>
+                    </span>
+                  </label>
+                  <label class="relative">
+                    <input type="radio" name="Gói dịch vụ" value="Chưa chắc — cần tư vấn thêm" class="peer sr-only" />
+                    <span class="flex flex-col h-full p-5 rounded-xl border border-line bg-white/70 cursor-pointer transition-colors hover:border-primary peer-checked:border-primary peer-checked:bg-card peer-checked:ring-1 peer-checked:ring-primary peer-focus-visible:ring-2 peer-focus-visible:ring-primary">
+                      <span class="text-[11px] tracking-[0.2em] uppercase text-primary mb-1">Consult</span>
+                      <span class="font-heading text-xl text-ink" data-i18n="bk.p4">Chưa chắc — cần tư vấn thêm</span>
+                    </span>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </fieldset>
+          <fieldset class="border-t border-line pt-10 mt-10 first:border-t-0 first:pt-0 first:mt-0">
+            <legend class="contents">
+              <span class="flex items-baseline gap-4 mb-8">
+                <span class="font-heading text-3xl text-accent">03</span>
+                <span class="font-heading text-3xl md:text-4xl text-ink" data-i18n="bk.s3">Ngân sách &amp; hiện trạng chuẩn bị</span>
+              </span>
+            </legend>
+            <div class="grid sm:grid-cols-2 gap-6">
+              <div class="sm:col-span-2 sm:max-w-sm">
+                <label for="bk-budget" class="block text-sm font-semibold text-ink mb-2"><span data-i18n="bk.budget">Ngân sách dự kiến</span></label>
+                <div class="relative">
+                  <select id="bk-budget" name="Ngân sách dự kiến" class="w-full bg-white/70 border border-line rounded-lg px-4 h-12 text-ink placeholder:text-muted/60 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors appearance-none pr-10 cursor-pointer">
+                  <option value="" data-i18n="bk.choose">— Chọn —</option>
+                  <option value="Dưới 50 triệu" data-i18n="bk.b1">Dưới 50 triệu</option>
+                  <option value="50 – 100 triệu" data-i18n="bk.b2">50 – 100 triệu</option>
+                  <option value="100 – 200 triệu" data-i18n="bk.b3">100 – 200 triệu</option>
+                  <option value="200 – 500 triệu" data-i18n="bk.b4">200 – 500 triệu</option>
+                  <option value="Trên 500 triệu" data-i18n="bk.b5">Trên 500 triệu</option>
+                  <option value="Cần tư vấn thêm" data-i18n="bk.b6">Cần tư vấn thêm</option>
+                  </select>
+                  <svg class="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
+                </div>
+              </div>
+              <div class="sm:col-span-2">
+                <label for="bk-done" class="block text-sm font-semibold text-ink mb-2"><span data-i18n="bk.done">Những dịch vụ hai bạn đã chốt / đặt cọc</span></label>
+                <textarea id="bk-done" name="Dịch vụ đã chốt" rows="3" class="w-full bg-white/70 border border-line rounded-lg px-4 py-3 text-ink placeholder:text-muted/60 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors" placeholder="Ví dụ: Đã chốt nhà hàng A, makeup B…" data-i18n-ph="bk.done.ph"></textarea>
+              </div>
+              <div class="sm:col-span-2">
+                <label for="bk-need" class="block text-sm font-semibold text-ink mb-2"><span data-i18n="bk.need">Những dịch vụ cần Amoa tìm giúp</span></label>
+                <textarea id="bk-need" name="Dịch vụ cần tìm giúp" rows="3" class="w-full bg-white/70 border border-line rounded-lg px-4 py-3 text-ink placeholder:text-muted/60 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors" placeholder="Ví dụ: Chụp ảnh, quay phim, ban nhạc…" data-i18n-ph="bk.need.ph"></textarea>
+              </div>
+            </div>
+          </fieldset>
+          <fieldset class="border-t border-line pt-10 mt-10 first:border-t-0 first:pt-0 first:mt-0">
+            <legend class="contents">
+              <span class="flex items-baseline gap-4 mb-8">
+                <span class="font-heading text-3xl text-accent">04</span>
+                <span class="font-heading text-3xl md:text-4xl text-ink" data-i18n="bk.s4">Ý tưởng &amp; lưu ý đặc biệt</span>
+              </span>
+            </legend>
+            <div class="grid sm:grid-cols-2 gap-6">
+              <div class="sm:col-span-2">
+                <label for="bk-style" class="block text-sm font-semibold text-ink mb-2"><span data-i18n="bk.style">Phong cách / Tông màu yêu thích</span></label>
+                <input id="bk-style" name="Phong cách / Tông màu" type="text" class="w-full bg-white/70 border border-line rounded-lg px-4 h-12 text-ink placeholder:text-muted/60 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors" placeholder="Ví dụ: Tối giản, tông be &amp; xanh rêu" data-i18n-ph="bk.style.ph" />
+              </div>
+              <div class="sm:col-span-2">
+                <label for="bk-ref" class="block text-sm font-semibold text-ink mb-2"><span data-i18n="bk.ref">Link ảnh tham khảo (Pinterest / Drive)</span></label>
+                <input id="bk-ref" name="Link tham khảo" type="url" class="w-full bg-white/70 border border-line rounded-lg px-4 h-12 text-ink placeholder:text-muted/60 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors" placeholder="https://" data-i18n-ph="bk.ref.ph" />
+              </div>
+              <div class="sm:col-span-2">
+                <label for="bk-special" class="block text-sm font-semibold text-ink mb-2"><span data-i18n="bk.special">Yêu cầu đặc biệt</span></label>
+                <textarea id="bk-special" name="Yêu cầu đặc biệt" rows="3" class="w-full bg-white/70 border border-line rounded-lg px-4 py-3 text-ink placeholder:text-muted/60 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors" placeholder="Ăn chay, tôn giáo, nghi thức bắt buộc…" data-i18n-ph="bk.special.ph"></textarea>
+              </div>
+              <div class="sm:col-span-2">
+                <p class="block text-sm font-semibold text-ink mb-2" data-i18n="bk.channel">Amoa nên liên hệ lại qua</p>
+                <div class="flex flex-wrap gap-3 mt-3">
+                  <label class="relative"><input type="radio" name="Kênh liên hệ" value="Zalo" class="peer sr-only" checked /><span class="inline-flex items-center gap-2 px-5 h-11 rounded-full border border-line bg-white/70 text-ink cursor-pointer transition-colors peer-checked:bg-primary peer-checked:border-primary peer-checked:text-white peer-focus-visible:ring-2 peer-focus-visible:ring-primary hover:border-primary" data-i18n="bk.c1">Zalo</span></label>
+                  <label class="relative"><input type="radio" name="Kênh liên hệ" value="WhatsApp" class="peer sr-only" /><span class="inline-flex items-center gap-2 px-5 h-11 rounded-full border border-line bg-white/70 text-ink cursor-pointer transition-colors peer-checked:bg-primary peer-checked:border-primary peer-checked:text-white peer-focus-visible:ring-2 peer-focus-visible:ring-primary hover:border-primary" data-i18n="bk.c2">WhatsApp</span></label>
+                  <label class="relative"><input type="radio" name="Kênh liên hệ" value="Gọi điện" class="peer sr-only" /><span class="inline-flex items-center gap-2 px-5 h-11 rounded-full border border-line bg-white/70 text-ink cursor-pointer transition-colors peer-checked:bg-primary peer-checked:border-primary peer-checked:text-white peer-focus-visible:ring-2 peer-focus-visible:ring-primary hover:border-primary" data-i18n="bk.c3">Gọi điện</span></label>
+                  <label class="relative"><input type="radio" name="Kênh liên hệ" value="Email" class="peer sr-only" /><span class="inline-flex items-center gap-2 px-5 h-11 rounded-full border border-line bg-white/70 text-ink cursor-pointer transition-colors peer-checked:bg-primary peer-checked:border-primary peer-checked:text-white peer-focus-visible:ring-2 peer-focus-visible:ring-primary hover:border-primary" data-i18n="bk.c4">Email</span></label>
+                </div>
+              </div>
+            </div>
+          </fieldset>
+
+          <!-- Gửi -->
+          <div class="border-t border-line pt-10 mt-10 text-center">
+            <p id="bk-error" class="hidden mb-5 text-primary" role="alert" data-i18n="bk.err">Vui lòng điền Họ tên và Số điện thoại hợp lệ.</p>
+            <button type="submit" class="inline-flex items-center justify-center gap-3 rounded-full bg-primary hover:bg-secondary text-white px-12 h-14 text-lg transition-colors duration-300 disabled:opacity-60">
+              <span data-i18n="bk.submit">Gửi thông tin</span>
+              <span aria-hidden="true">→</span>
+            </button>
+            <p class="text-sm text-muted mt-4" data-i18n="bk.privacy">Thông tin của hai bạn chỉ dùng để Amoa chuẩn bị buổi tư vấn.</p>
+          </div>
+        </form>
+
+        <!-- Màn hình cảm ơn (hiện sau khi gửi) -->
+        <div id="bk-done" class="hidden text-center py-10" tabindex="-1">
+          <div class="w-16 h-16 mx-auto mb-8 rounded-full bg-card flex items-center justify-center text-primary">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg>
+          </div>
+          <h3 class="text-4xl md:text-5xl mb-5" data-i18n="bk.thanks">Cảm ơn hai bạn!</h3>
+          <p class="text-lg text-muted leading-relaxed max-w-xl mx-auto mb-4" data-i18n="bk.thanksDesc">Amoa sẽ dựa vào những thông tin này để chuẩn bị phương án tốt nhất cho buổi hẹn sắp tới.</p>
+          <!-- Chỉ hiện khi chưa cấu hình FORM_ENDPOINT (gửi qua ứng dụng email) -->
+          <div id="bk-mail-note" class="hidden max-w-xl mx-auto bg-card rounded-xl p-6 mt-8 text-left">
+            <p class="text-ink leading-relaxed mb-5" data-i18n="bk.mailNote">Ứng dụng email của bạn vừa mở với nội dung đã điền sẵn — hãy bấm <strong>Gửi</strong> để hoàn tất. Nếu email không mở, bạn có thể sao chép thông tin và gửi qua Zalo.</p>
+            <div class="flex flex-col sm:flex-row gap-3">
+              <button type="button" id="bk-copy-zalo" class="inline-flex items-center justify-center gap-2 rounded-full bg-primary hover:bg-secondary text-white px-6 h-12 transition-colors sm:flex-1" data-i18n="bk.copyZalo">Sao chép &amp; mở Zalo</button>
+              <button type="button" id="bk-reopen-mail" class="inline-flex items-center justify-center gap-2 rounded-full border border-primary text-primary hover:bg-primary hover:text-white px-6 h-12 transition-colors sm:flex-1" data-i18n="bk.reopenMail">Mở lại email</button>
+            </div>
+            <p id="bk-copied" class="hidden text-sm text-secondary mt-3" data-i18n="bk.copied">Đã sao chép — dán vào khung chat Zalo của Amoa nhé.</p>
+          </div>
+          <a href="#" class="bk-close inline-flex items-center justify-center rounded-full border border-primary text-primary hover:bg-primary hover:text-white px-8 h-12 mt-10 transition-colors" data-i18n="bk.backSite">Quay lại trang web</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =====================================================================
+       TRANG DỊCH VỤ: PLANNING & DECORATION (lớp phủ toàn màn hình)
+       Mở bằng hash: #planning · #decoration
+       ===================================================================== -->
+  <!-- TRANG PLANNING (mở bằng link #planning — từ menu Dịch vụ) -->
+  <div id="planning" class="pkg-page fixed inset-0 z-[60] bg-cream overflow-y-auto" role="dialog" aria-modal="true" aria-labelledby="planning-title" aria-hidden="true">
+    <div class="sticky top-0 z-10 header-glass border-b border-black/10">
+      <div class="container mx-auto px-4 h-16 md:h-20 flex items-center justify-between">
+        <a href="#services" class="pkg-back inline-flex items-center gap-3 text-sm tracking-widest uppercase text-ink hover:text-primary transition-colors">
+          <span aria-hidden="true">←</span><span data-i18n="pkg.home">Quay lại trang chủ</span>
+        </a>
+        <img src="images/logo-amoa.png" alt="Amoa" width="472" height="146" class="h-9 md:h-11 w-auto" />
+        <a href="#services" class="w-10 h-10 inline-flex items-center justify-center rounded-full border border-line text-ink hover:text-primary hover:border-primary transition-colors" aria-label="Đóng" data-i18n-aria="pkg.close">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" /></svg>
+        </a>
+      </div>
+    </div>
+
+    <div class="container mx-auto px-4 py-16 md:py-24">
+      <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-6 pb-8 mb-12 border-b border-line">
+        <div>
+          <p class="text-xs font-semibold text-primary uppercase tracking-[0.15em] mb-4" data-i18n="nav.services">Dịch vụ</p>
+          <h2 id="planning-title" class="text-5xl md:text-7xl text-secondary">Planning</h2>
+        </div>
+        <p class="text-lg text-muted max-w-md leading-relaxed" data-i18n="sv.g1.desc">Lên kế hoạch và điều phối — từ ý tưởng đầu tiên đến lời chúc cuối cùng của buổi tiệc.</p>
+      </div>
+
+          <!-- Catalog 3 gói — bấm vào để mở trang chi tiết (xem các khối .pkg-page cuối trang) -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
+            <!-- Gói Toàn phần -->
+            <a href="#goi-toan-phan" class="group relative block aspect-[3/4] overflow-hidden rounded-xl shadow-lg">
+              <img src="https://images.unsplash.com/photo-1591604466107-ec97de577aff?auto=format&fit=crop&w=900&q=80" alt="Cô dâu chú rể cầm bó hoa cưới" data-i18n-alt="alt.full.cover" loading="lazy"
+                class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+              <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-black/5"></div>
+              <span class="absolute top-6 left-8 font-heading text-3xl text-white/80">01</span>
+              <div class="absolute inset-x-0 bottom-0 p-8 text-white">
+                <p class="text-xs tracking-[0.2em] uppercase text-white/75 mb-2">Full Planning</p>
+                <h4 class="text-3xl mb-3" data-i18n="full.title">Gói Toàn phần</h4>
+                <p class="text-[15px] leading-relaxed text-white/80 mb-6" data-i18n="full.desc">Amoa đồng hành trọn vẹn từ ngày đầu tiên đến khi tiệc khép lại, để hai bạn an tâm tận hưởng hành trình.</p>
+                <span class="inline-flex items-center gap-3 text-xs tracking-[0.2em] uppercase border-b border-white/50 pb-1 transition-colors group-hover:border-white">
+                  <span data-i18n="pkg.more">Xem chi tiết</span>
+                  <span aria-hidden="true" class="transition-transform group-hover:translate-x-1">→</span>
+                </span>
+              </div>
+            </a>
+
+            <!-- Gói Bán phần -->
+            <a href="#goi-ban-phan" class="group relative block aspect-[3/4] overflow-hidden rounded-xl shadow-lg">
+              <img src="https://images.unsplash.com/photo-1522413452208-996ff3f3e740?auto=format&fit=crop&w=900&q=80" alt="Bàn tiệc cưới với lá xanh và nến" data-i18n-alt="alt.partial.cover" loading="lazy"
+                class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+              <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-black/5"></div>
+              <span class="absolute top-6 left-8 font-heading text-3xl text-white/80">02</span>
+              <div class="absolute inset-x-0 bottom-0 p-8 text-white">
+                <p class="text-xs tracking-[0.2em] uppercase text-white/75 mb-2">Partial Planning</p>
+                <h4 class="text-3xl mb-3" data-i18n="partial.title">Gói Bán phần</h4>
+                <p class="text-[15px] leading-relaxed text-white/80 mb-6" data-i18n="partial.desc">Dành cho cặp đôi đã chuẩn bị một phần — Amoa tiếp nối và hoàn thiện những hạng mục còn lại.</p>
+                <span class="inline-flex items-center gap-3 text-xs tracking-[0.2em] uppercase border-b border-white/50 pb-1 transition-colors group-hover:border-white">
+                  <span data-i18n="pkg.more">Xem chi tiết</span>
+                  <span aria-hidden="true" class="transition-transform group-hover:translate-x-1">→</span>
+                </span>
+              </div>
+            </a>
+
+            <!-- Đội ngũ điều phối -->
+            <a href="#doi-ngu-dieu-phoi" class="group relative block aspect-[3/4] overflow-hidden rounded-xl shadow-lg">
+              <img src="https://images.unsplash.com/photo-1583939003579-730e3918a45a?auto=format&fit=crop&w=900&q=80" alt="Cô dâu chú rể giữa mưa hoa giấy" data-i18n-alt="alt.dayof.cover" loading="lazy"
+                class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+              <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-black/5"></div>
+              <span class="absolute top-6 left-8 font-heading text-3xl text-white/80">03</span>
+              <div class="absolute inset-x-0 bottom-0 p-8 text-white">
+                <p class="text-xs tracking-[0.2em] uppercase text-white/75 mb-2">Day-of Coordination</p>
+                <h4 class="text-3xl mb-3" data-i18n="dayof.title">Đội ngũ điều phối</h4>
+                <p class="text-[15px] leading-relaxed text-white/80 mb-6" data-i18n="dayof.desc">Hai bạn đã tự lên kế hoạch — Amoa đảm bảo mọi thứ diễn ra trơn tru đúng như kịch bản.</p>
+                <span class="inline-flex items-center gap-3 text-xs tracking-[0.2em] uppercase border-b border-white/50 pb-1 transition-colors group-hover:border-white">
+                  <span data-i18n="pkg.more">Xem chi tiết</span>
+                  <span aria-hidden="true" class="transition-transform group-hover:translate-x-1">→</span>
+                </span>
+              </div>
+            </a>
+          </div>
+    </div>
+  </div>
+
+  <!-- TRANG DECORATION (mở bằng link #decoration — từ menu Dịch vụ) -->
+  <div id="decoration" class="pkg-page fixed inset-0 z-[60] bg-cream overflow-y-auto" role="dialog" aria-modal="true" aria-labelledby="decoration-title" aria-hidden="true">
+    <div class="sticky top-0 z-10 header-glass border-b border-black/10">
+      <div class="container mx-auto px-4 h-16 md:h-20 flex items-center justify-between">
+        <a href="#services" class="pkg-back inline-flex items-center gap-3 text-sm tracking-widest uppercase text-ink hover:text-primary transition-colors">
+          <span aria-hidden="true">←</span><span data-i18n="pkg.home">Quay lại trang chủ</span>
+        </a>
+        <img src="images/logo-amoa.png" alt="Amoa" width="472" height="146" class="h-9 md:h-11 w-auto" />
+        <a href="#services" class="w-10 h-10 inline-flex items-center justify-center rounded-full border border-line text-ink hover:text-primary hover:border-primary transition-colors" aria-label="Đóng" data-i18n-aria="pkg.close">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" /></svg>
+        </a>
+      </div>
+    </div>
+
+    <div class="container mx-auto px-4 py-16 md:py-24">
+      <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-6 pb-8 mb-12 border-b border-line">
+        <div>
+          <p class="text-xs font-semibold text-primary uppercase tracking-[0.15em] mb-4" data-i18n="nav.services">Dịch vụ</p>
+          <h2 id="decoration-title" class="text-5xl md:text-7xl text-secondary">Decoration</h2>
+        </div>
+        <p class="text-lg text-muted max-w-md leading-relaxed" data-i18n="sv.g2.desc">Không có mẫu dựng sẵn — mỗi không gian được thiết kế riêng theo concept, địa điểm và câu chuyện của bạn.</p>
+      </div>
+
+          <div class="grid lg:grid-cols-5 gap-12 lg:gap-16 items-start">
+            <!-- Ảnh minh hoạ -->
+            <div class="lg:col-span-2 relative">
+              <img src="https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?auto=format&fit=crop&w=1000&q=80"
+                alt="Không gian tiệc cưới được thiết kế hoa" data-i18n-alt="alt.floral" loading="lazy"
+                class="w-full aspect-[4/5] object-cover rounded-sm shadow-xl" />
+              <p class="mt-6 font-heading text-2xl text-secondary leading-snug" data-i18n="sv.quote">“Hoa không chỉ để trang trí — hoa là cách kể chuyện.”</p>
+            </div>
+
+            <!-- Accordion: chia 2 nhóm Wedding / Event -->
+            <div class="lg:col-span-3" id="accordion">
+
+              <!-- ===== NHÓM WEDDING ===== -->
+              <h3 class="font-heading text-3xl md:text-4xl text-secondary mb-5" data-i18n="dec.wedding">Tiệc cưới</h3>
+              <div class="border-t border-line">
+
+              <!-- Gói Gia Tiên (mở sẵn) -->
+              <div class="acc-item is-open border-b border-line">
+                <button class="acc-trigger w-full flex items-center justify-between gap-6 py-7 text-left group" aria-expanded="true">
+                  <span class="flex items-baseline gap-5">
+                    <span class="font-heading text-xl text-accent">01</span>
+                    <span class="font-heading text-2xl md:text-3xl group-hover:text-primary transition-colors" data-i18n="acc1.title">Gói Gia Tiên</span>
+                  </span>
+                  <span class="acc-icon text-primary text-3xl leading-none transition-transform duration-300">+</span>
+                </button>
+                <div class="acc-panel"><div class="overflow-hidden">
+                  <div class="pb-8 pl-0 md:pl-11 text-muted leading-relaxed">
+                    <p class="mb-4" data-i18n="acc1.desc">Kiến tạo không gian lễ gia tiên tại tư gia — hài hoà nét trang nghiêm truyền thống với thẩm mỹ đương đại, theo bảng màu và câu chuyện riêng của hai gia đình.</p>
+                    <p class="text-sm tracking-wide text-muted" data-i18n="acc1.items">Bàn thờ gia tiên · Cổng hoa · Phông nền · Bàn tiếp khách · Lối đi &amp; ánh sáng</p>
+                  </div>
+                </div></div>
+              </div>
+
+              <!-- Gói Tiệc Ngoài Trời -->
+              <div class="acc-item border-b border-line">
+                <button class="acc-trigger w-full flex items-center justify-between gap-6 py-7 text-left group" aria-expanded="false">
+                  <span class="flex items-baseline gap-5">
+                    <span class="font-heading text-xl text-accent">02</span>
+                    <span class="font-heading text-2xl md:text-3xl group-hover:text-primary transition-colors" data-i18n="acc2.title">Gói Tiệc Ngoài Trời</span>
+                  </span>
+                  <span class="acc-icon text-primary text-3xl leading-none transition-transform duration-300">+</span>
+                </button>
+                <div class="acc-panel"><div class="overflow-hidden">
+                  <div class="pb-8 pl-0 md:pl-11 text-muted leading-relaxed">
+                    <p class="mb-4" data-i18n="acc2.desc">Garden, bãi biển hay resort — thiết kế tổng thể dựa trên cảnh quan sẵn có, để thiên nhiên và hoa cùng kể câu chuyện của bạn. Luôn kèm phương án dự phòng thời tiết.</p>
+                    <p class="text-sm tracking-wide text-muted" data-i18n="acc2.items">Cổng lễ · Lối đi · Bàn tiệc &amp; centerpiece · Ánh sáng đêm · Khu đón khách</p>
+                  </div>
+                </div></div>
+              </div>
+
+              <!-- Gói Nhà Hàng -->
+              <div class="acc-item border-b border-line">
+                <button class="acc-trigger w-full flex items-center justify-between gap-6 py-7 text-left group" aria-expanded="false">
+                  <span class="flex items-baseline gap-5">
+                    <span class="font-heading text-xl text-accent">03</span>
+                    <span class="font-heading text-2xl md:text-3xl group-hover:text-primary transition-colors" data-i18n="acc3.title">Gói Nhà Hàng</span>
+                  </span>
+                  <span class="acc-icon text-primary text-3xl leading-none transition-transform duration-300">+</span>
+                </button>
+                <div class="acc-panel"><div class="overflow-hidden">
+                  <div class="pb-8 pl-0 md:pl-11 text-muted leading-relaxed">
+                    <p class="mb-4" data-i18n="acc3.desc">Biến sảnh tiệc quen thuộc thành không gian mang dấu ấn riêng — tuỳ biến theo kiến trúc sảnh, số lượng khách và concept hai bạn lựa chọn.</p>
+                    <p class="text-sm tracking-wide text-muted" data-i18n="acc3.items">Sân khấu &amp; backdrop · Bàn tiệc · Centerpiece · Khu check-in · Bàn gallery</p>
+                  </div>
+                </div></div>
+              </div>
+
+              </div>
+
+              <!-- ===== NHÓM EVENT ===== -->
+              <h3 class="font-heading text-3xl md:text-4xl text-secondary mt-16 mb-5" data-i18n="dec.event">Sự kiện</h3>
+              <div class="border-t border-line">
+
+              <!-- Hạng mục thiết kế lẻ -->
+              <div class="acc-item border-b border-line">
+                <button class="acc-trigger w-full flex items-center justify-between gap-6 py-7 text-left group" aria-expanded="false">
+                  <span class="flex items-baseline gap-5">
+                    <span class="font-heading text-xl text-accent">01</span>
+                    <span class="font-heading text-2xl md:text-3xl group-hover:text-primary transition-colors" data-i18n="acc4.title">Hạng mục thiết kế lẻ</span>
+                  </span>
+                  <span class="acc-icon text-primary text-3xl leading-none transition-transform duration-300">+</span>
+                </button>
+                <div class="acc-panel"><div class="overflow-hidden">
+                  <div class="pb-8 pl-0 md:pl-11 text-muted leading-relaxed">
+                    <p class="mb-4" data-i18n="acc4.desc">Chỉ cần một vài điểm nhấn? Amoa nhận thiết kế từng hạng mục riêng, vẫn giữ trọn tinh thần đồng bộ với concept chung.</p>
+                    <p class="text-sm tracking-wide text-muted" data-i18n="acc4.items">Hoa cầm tay · Hoa cài áo · Xe hoa · Photobooth · Bảng chào mừng · Hoa bàn tiệc</p>
+                  </div>
+                </div></div>
+              </div>
+              </div>
+
+              <p class="pt-8 text-sm text-muted" data-i18n="sv.note">Mỗi đề xuất được cá nhân hoá theo concept và quy mô — liên hệ Amoa để nhận tư vấn chi tiết.</p>
+            </div>
+          </div>
+    </div>
+  </div>
+
+  <!-- =====================================================================
+       TRANG CHI TIẾT 3 GÓI WEDDING PLANNING (lớp phủ toàn màn hình)
+       Mở bằng hash: #goi-toan-phan · #goi-ban-phan · #doi-ngu-dieu-phoi
+       Ảnh hiện là placeholder Unsplash — thay bằng ảnh thật của Amoa.
+       ===================================================================== -->
+  <!-- TRANG CHI TIẾT: Gói Toàn phần (mở bằng link #goi-toan-phan) -->
+  <div id="goi-toan-phan" class="pkg-page fixed inset-0 z-[60] bg-cream overflow-y-auto" role="dialog" aria-modal="true" aria-labelledby="goi-toan-phan-title" aria-hidden="true">
+    <!-- Thanh trên cùng -->
+    <div class="sticky top-0 z-10 header-glass border-b border-black/10">
+      <div class="container mx-auto px-4 h-16 md:h-20 flex items-center justify-between">
+        <a href="#planning" class="pkg-back inline-flex items-center gap-3 text-sm tracking-widest uppercase text-ink hover:text-primary transition-colors">
+          <span aria-hidden="true">←</span><span data-i18n="pkg.back">Quay lại Planning</span>
+        </a>
+        <img src="images/logo-amoa.png" alt="Amoa" width="472" height="146" class="h-9 md:h-11 w-auto" />
+        <a href="#planning" class="w-10 h-10 inline-flex items-center justify-center rounded-full border border-line text-ink hover:text-primary hover:border-primary transition-colors" aria-label="Đóng" data-i18n-aria="pkg.close">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" /></svg>
+        </a>
+      </div>
+    </div>
+
+    <!-- Ảnh bìa -->
+    <div class="relative h-[52vh] min-h-[360px] overflow-hidden bg-black">
+      <img src="https://images.unsplash.com/photo-1591604466107-ec97de577aff?auto=format&fit=crop&w=2000&q=80" alt="Cô dâu chú rể cầm bó hoa cưới" data-i18n-alt="alt.full.cover" class="absolute inset-0 w-full h-full object-cover opacity-75" />
+      <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent"></div>
+      <div class="absolute inset-x-0 bottom-0">
+        <div class="container mx-auto px-4 pb-10 md:pb-14 text-white">
+          <p class="text-xs md:text-sm tracking-[0.3em] uppercase text-white/80 mb-3"><span class="font-heading text-xl md:text-2xl tracking-normal mr-3">01</span>Full Planning</p>
+          <h2 id="goi-toan-phan-title" class="text-5xl md:text-7xl leading-tight" data-i18n="full.title">Gói Toàn phần</h2>
+        </div>
+      </div>
+    </div>
+
+    <!-- Nội dung -->
+    <div class="container mx-auto px-4 py-16 md:py-24">
+      <div class="grid lg:grid-cols-3 gap-12 lg:gap-16">
+        <div class="lg:col-span-2">
+          <p class="text-2xl md:text-3xl font-heading text-secondary leading-snug mb-6" data-i18n="full.desc">Amoa đồng hành trọn vẹn từ ngày đầu tiên đến khi tiệc khép lại, để hai bạn an tâm tận hưởng hành trình.</p>
+          <p class="text-lg text-muted leading-relaxed mb-14" data-i18n="full.long">Từ buổi gặp đầu tiên đến khi vị khách cuối cùng ra về, Amoa là người đồng hành duy nhất hai bạn cần. Tụi mình lo trọn concept, ngân sách, nhà cung cấp, thiết kế không gian và điều phối — để hai bạn dành trọn thời gian cho nhau và cho gia đình.</p>
+
+          <h3 class="text-xs font-semibold text-primary uppercase tracking-[0.2em] mb-6" data-i18n="pkg.includes">Dịch vụ bao gồm</h3>
+          <ul class="grid sm:grid-cols-2 gap-4">
+                <li class="flex gap-4 p-5 bg-card rounded-lg">
+                  <span class="font-heading text-2xl text-accent leading-none">01</span>
+                  <span class="text-ink leading-relaxed" data-i18n="full.i1">Tư vấn ý tưởng &amp; concept tổng thể</span>
+                </li>
+                <li class="flex gap-4 p-5 bg-card rounded-lg">
+                  <span class="font-heading text-2xl text-accent leading-none">02</span>
+                  <span class="text-ink leading-relaxed" data-i18n="full.i2">Lập kế hoạch, timeline &amp; phân bổ ngân sách</span>
+                </li>
+                <li class="flex gap-4 p-5 bg-card rounded-lg">
+                  <span class="font-heading text-2xl text-accent leading-none">03</span>
+                  <span class="text-ink leading-relaxed" data-i18n="full.i3">Tuyển chọn &amp; làm việc với nhà cung cấp</span>
+                </li>
+                <li class="flex gap-4 p-5 bg-card rounded-lg">
+                  <span class="font-heading text-2xl text-accent leading-none">04</span>
+                  <span class="text-ink leading-relaxed" data-i18n="full.i4">Thiết kế, trang trí &amp; điều phối ngày cưới</span>
+                </li>
+                <li class="flex gap-4 p-5 bg-card rounded-lg">
+                  <span class="font-heading text-2xl text-accent leading-none">05</span>
+                  <span class="text-ink leading-relaxed" data-i18n="full.i5">Thiết kế hoa &amp; không gian theo concept riêng</span>
+                </li>
+                <li class="flex gap-4 p-5 bg-card rounded-lg">
+                  <span class="font-heading text-2xl text-accent leading-none">06</span>
+                  <span class="text-ink leading-relaxed" data-i18n="full.i6">Quản lý khách mời, thiệp mời &amp; sơ đồ bàn tiệc</span>
+                </li>
+          </ul>
+        </div>
+
+        <!-- Cột phải: phù hợp với / thời gian / đặt lịch -->
+        <aside class="lg:sticky lg:top-28 self-start bg-card rounded-xl p-8 space-y-8">
+          <div>
+            <h3 class="text-xs font-semibold text-primary uppercase tracking-[0.2em] mb-3" data-i18n="pkg.for">Phù hợp với</h3>
+            <p class="text-ink leading-relaxed" data-i18n="full.for">Cặp đôi bận rộn, ở xa hoặc muốn một đám cưới được chăm chút trọn vẹn mà không phải tự lo từng chi tiết.</p>
+          </div>
+          <div class="border-t border-line pt-8">
+            <h3 class="text-xs font-semibold text-primary uppercase tracking-[0.2em] mb-3" data-i18n="pkg.time">Thời gian đồng hành</h3>
+            <p class="font-heading text-2xl" data-i18n="full.time">Từ 6 – 12 tháng trước ngày cưới</p>
+          </div>
+          <div class="border-t border-line pt-8">
+            <p class="text-sm text-muted leading-relaxed mb-6" data-i18n="pkg.note">Mỗi gói đều được điều chỉnh theo quy mô và mong muốn của hai bạn — liên hệ Amoa để nhận tư vấn chi tiết.</p>
+            <a href="#dat-lich" class="w-full inline-flex items-center justify-center rounded-full bg-primary hover:bg-secondary text-white px-8 h-14 text-lg transition-colors duration-300" data-i18n="cta.book">Đặt lịch tư vấn</a>
+          </div>
+        </aside>
+      </div>
+
+      <!-- Bộ ảnh -->
+      <div class="mt-20 md:mt-28">
+        <h3 class="text-xs font-semibold text-primary uppercase tracking-[0.2em] mb-8 text-center" data-i18n="pkg.gallery">Khoảnh khắc</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6 sm:pb-8">
+              <img src="https://images.unsplash.com/photo-1507504031003-b417219a0fde?auto=format&fit=crop&w=800&q=80" alt="Bảng gỗ Mr &amp; Mrs trang trí tiệc cưới" data-i18n-alt="alt.full.g1" loading="lazy"
+                class="w-full aspect-[4/5] object-cover rounded-sm" />
+              <img src="https://images.unsplash.com/photo-1517722014278-c256a91a6fba?auto=format&fit=crop&w=800&q=80" alt="Hoa cài áo chú rể" data-i18n-alt="alt.full.g2" loading="lazy"
+                class="w-full aspect-[4/5] object-cover rounded-sm sm:translate-y-8" />
+              <img src="https://images.unsplash.com/photo-1460978812857-470ed1c77af0?auto=format&fit=crop&w=800&q=80" alt="Cô dâu chú rể trong khăn voan" data-i18n-alt="alt.full.g3" loading="lazy"
+                class="w-full aspect-[4/5] object-cover rounded-sm" />
+        </div>
+      </div>
+
+      <!-- Các gói khác -->
+      <div class="mt-20 md:mt-28 border-t border-line pt-12">
+        <h3 class="text-xs font-semibold text-primary uppercase tracking-[0.2em] mb-6" data-i18n="pkg.others">Các gói khác</h3>
+        <div class="grid md:grid-cols-2 gap-4">
+              <a href="#goi-ban-phan" class="group flex items-center gap-5 p-4 bg-card rounded-lg transition-colors hover:bg-line/60">
+                <img src="https://images.unsplash.com/photo-1522413452208-996ff3f3e740?auto=format&fit=crop&w=300&q=80" alt="" loading="lazy" class="w-20 h-20 object-cover rounded-md shrink-0" />
+                <span>
+                  <span class="block text-[11px] tracking-[0.2em] uppercase text-primary">Partial Planning</span>
+                  <span class="block font-heading text-2xl group-hover:text-primary transition-colors" data-i18n="partial.title">Gói Bán phần</span>
+                </span>
+                <span aria-hidden="true" class="ml-auto text-primary transition-transform group-hover:translate-x-1">→</span>
+              </a>
+              <a href="#doi-ngu-dieu-phoi" class="group flex items-center gap-5 p-4 bg-card rounded-lg transition-colors hover:bg-line/60">
+                <img src="https://images.unsplash.com/photo-1583939003579-730e3918a45a?auto=format&fit=crop&w=300&q=80" alt="" loading="lazy" class="w-20 h-20 object-cover rounded-md shrink-0" />
+                <span>
+                  <span class="block text-[11px] tracking-[0.2em] uppercase text-primary">Day-of Coordination</span>
+                  <span class="block font-heading text-2xl group-hover:text-primary transition-colors" data-i18n="dayof.title">Đội ngũ điều phối</span>
+                </span>
+                <span aria-hidden="true" class="ml-auto text-primary transition-transform group-hover:translate-x-1">→</span>
+              </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TRANG CHI TIẾT: Gói Bán phần (mở bằng link #goi-ban-phan) -->
+  <div id="goi-ban-phan" class="pkg-page fixed inset-0 z-[60] bg-cream overflow-y-auto" role="dialog" aria-modal="true" aria-labelledby="goi-ban-phan-title" aria-hidden="true">
+    <!-- Thanh trên cùng -->
+    <div class="sticky top-0 z-10 header-glass border-b border-black/10">
+      <div class="container mx-auto px-4 h-16 md:h-20 flex items-center justify-between">
+        <a href="#planning" class="pkg-back inline-flex items-center gap-3 text-sm tracking-widest uppercase text-ink hover:text-primary transition-colors">
+          <span aria-hidden="true">←</span><span data-i18n="pkg.back">Quay lại Planning</span>
+        </a>
+        <img src="images/logo-amoa.png" alt="Amoa" width="472" height="146" class="h-9 md:h-11 w-auto" />
+        <a href="#planning" class="w-10 h-10 inline-flex items-center justify-center rounded-full border border-line text-ink hover:text-primary hover:border-primary transition-colors" aria-label="Đóng" data-i18n-aria="pkg.close">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" /></svg>
+        </a>
+      </div>
+    </div>
+
+    <!-- Ảnh bìa -->
+    <div class="relative h-[52vh] min-h-[360px] overflow-hidden bg-black">
+      <img src="https://images.unsplash.com/photo-1522413452208-996ff3f3e740?auto=format&fit=crop&w=2000&q=80" alt="Bàn tiệc cưới với lá xanh và nến" data-i18n-alt="alt.partial.cover" class="absolute inset-0 w-full h-full object-cover opacity-75" />
+      <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent"></div>
+      <div class="absolute inset-x-0 bottom-0">
+        <div class="container mx-auto px-4 pb-10 md:pb-14 text-white">
+          <p class="text-xs md:text-sm tracking-[0.3em] uppercase text-white/80 mb-3"><span class="font-heading text-xl md:text-2xl tracking-normal mr-3">02</span>Partial Planning</p>
+          <h2 id="goi-ban-phan-title" class="text-5xl md:text-7xl leading-tight" data-i18n="partial.title">Gói Bán phần</h2>
+        </div>
+      </div>
+    </div>
+
+    <!-- Nội dung -->
+    <div class="container mx-auto px-4 py-16 md:py-24">
+      <div class="grid lg:grid-cols-3 gap-12 lg:gap-16">
+        <div class="lg:col-span-2">
+          <p class="text-2xl md:text-3xl font-heading text-secondary leading-snug mb-6" data-i18n="partial.desc">Dành cho cặp đôi đã chuẩn bị một phần — Amoa tiếp nối và hoàn thiện những hạng mục còn lại.</p>
+          <p class="text-lg text-muted leading-relaxed mb-14" data-i18n="partial.long">Hai bạn đã có địa điểm, vài nhà cung cấp hay một ý tưởng rõ ràng? Amoa bước vào đúng lúc cần — rà soát những gì đã có, lấp đầy khoảng trống và kết nối mọi thứ thành một tổng thể liền mạch.</p>
+
+          <h3 class="text-xs font-semibold text-primary uppercase tracking-[0.2em] mb-6" data-i18n="pkg.includes">Dịch vụ bao gồm</h3>
+          <ul class="grid sm:grid-cols-2 gap-4">
+                <li class="flex gap-4 p-5 bg-card rounded-lg">
+                  <span class="font-heading text-2xl text-accent leading-none">01</span>
+                  <span class="text-ink leading-relaxed" data-i18n="partial.i1">Rà soát &amp; tối ưu kế hoạch hiện có</span>
+                </li>
+                <li class="flex gap-4 p-5 bg-card rounded-lg">
+                  <span class="font-heading text-2xl text-accent leading-none">02</span>
+                  <span class="text-ink leading-relaxed" data-i18n="partial.i2">Hoàn thiện các hạng mục còn thiếu</span>
+                </li>
+                <li class="flex gap-4 p-5 bg-card rounded-lg">
+                  <span class="font-heading text-2xl text-accent leading-none">03</span>
+                  <span class="text-ink leading-relaxed" data-i18n="partial.i3">Kết nối nhà cung cấp bổ sung</span>
+                </li>
+                <li class="flex gap-4 p-5 bg-card rounded-lg">
+                  <span class="font-heading text-2xl text-accent leading-none">04</span>
+                  <span class="text-ink leading-relaxed" data-i18n="partial.i4">Điều phối trong ngày cưới</span>
+                </li>
+                <li class="flex gap-4 p-5 bg-card rounded-lg">
+                  <span class="font-heading text-2xl text-accent leading-none">05</span>
+                  <span class="text-ink leading-relaxed" data-i18n="partial.i5">Thiết kế hoa &amp; trang trí cho các hạng mục được chọn</span>
+                </li>
+                <li class="flex gap-4 p-5 bg-card rounded-lg">
+                  <span class="font-heading text-2xl text-accent leading-none">06</span>
+                  <span class="text-ink leading-relaxed" data-i18n="partial.i6">Lên kịch bản chương trình &amp; timeline ngày cưới</span>
+                </li>
+          </ul>
+        </div>
+
+        <!-- Cột phải: phù hợp với / thời gian / đặt lịch -->
+        <aside class="lg:sticky lg:top-28 self-start bg-card rounded-xl p-8 space-y-8">
+          <div>
+            <h3 class="text-xs font-semibold text-primary uppercase tracking-[0.2em] mb-3" data-i18n="pkg.for">Phù hợp với</h3>
+            <p class="text-ink leading-relaxed" data-i18n="partial.for">Cặp đôi đã chủ động chuẩn bị một phần và cần người có kinh nghiệm hoàn thiện, tối ưu phần còn lại.</p>
+          </div>
+          <div class="border-t border-line pt-8">
+            <h3 class="text-xs font-semibold text-primary uppercase tracking-[0.2em] mb-3" data-i18n="pkg.time">Thời gian đồng hành</h3>
+            <p class="font-heading text-2xl" data-i18n="partial.time">Từ 3 – 6 tháng trước ngày cưới</p>
+          </div>
+          <div class="border-t border-line pt-8">
+            <p class="text-sm text-muted leading-relaxed mb-6" data-i18n="pkg.note">Mỗi gói đều được điều chỉnh theo quy mô và mong muốn của hai bạn — liên hệ Amoa để nhận tư vấn chi tiết.</p>
+            <a href="#dat-lich" class="w-full inline-flex items-center justify-center rounded-full bg-primary hover:bg-secondary text-white px-8 h-14 text-lg transition-colors duration-300" data-i18n="cta.book">Đặt lịch tư vấn</a>
+          </div>
+        </aside>
+      </div>
+
+      <!-- Bộ ảnh -->
+      <div class="mt-20 md:mt-28">
+        <h3 class="text-xs font-semibold text-primary uppercase tracking-[0.2em] mb-8 text-center" data-i18n="pkg.gallery">Khoảnh khắc</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6 sm:pb-8">
+              <img src="https://images.unsplash.com/photo-1487530811176-3780de880c2d?auto=format&fit=crop&w=800&q=80" alt="Bó hoa cưới tông đất ấm" data-i18n-alt="alt.partial.g1" loading="lazy"
+                class="w-full aspect-[4/5] object-cover rounded-sm" />
+              <img src="https://images.unsplash.com/photo-1606800052052-a08af7148866?auto=format&fit=crop&w=800&q=80" alt="Cặp nhẫn cưới" data-i18n-alt="alt.partial.g2" loading="lazy"
+                class="w-full aspect-[4/5] object-cover rounded-sm sm:translate-y-8" />
+              <img src="https://images.unsplash.com/photo-1510076857177-7470076d4098?auto=format&fit=crop&w=800&q=80" alt="Sảnh tiệc với rèm voan và đèn chùm" data-i18n-alt="alt.partial.g3" loading="lazy"
+                class="w-full aspect-[4/5] object-cover rounded-sm" />
+        </div>
+      </div>
+
+      <!-- Các gói khác -->
+      <div class="mt-20 md:mt-28 border-t border-line pt-12">
+        <h3 class="text-xs font-semibold text-primary uppercase tracking-[0.2em] mb-6" data-i18n="pkg.others">Các gói khác</h3>
+        <div class="grid md:grid-cols-2 gap-4">
+              <a href="#goi-toan-phan" class="group flex items-center gap-5 p-4 bg-card rounded-lg transition-colors hover:bg-line/60">
+                <img src="https://images.unsplash.com/photo-1591604466107-ec97de577aff?auto=format&fit=crop&w=300&q=80" alt="" loading="lazy" class="w-20 h-20 object-cover rounded-md shrink-0" />
+                <span>
+                  <span class="block text-[11px] tracking-[0.2em] uppercase text-primary">Full Planning</span>
+                  <span class="block font-heading text-2xl group-hover:text-primary transition-colors" data-i18n="full.title">Gói Toàn phần</span>
+                </span>
+                <span aria-hidden="true" class="ml-auto text-primary transition-transform group-hover:translate-x-1">→</span>
+              </a>
+              <a href="#doi-ngu-dieu-phoi" class="group flex items-center gap-5 p-4 bg-card rounded-lg transition-colors hover:bg-line/60">
+                <img src="https://images.unsplash.com/photo-1583939003579-730e3918a45a?auto=format&fit=crop&w=300&q=80" alt="" loading="lazy" class="w-20 h-20 object-cover rounded-md shrink-0" />
+                <span>
+                  <span class="block text-[11px] tracking-[0.2em] uppercase text-primary">Day-of Coordination</span>
+                  <span class="block font-heading text-2xl group-hover:text-primary transition-colors" data-i18n="dayof.title">Đội ngũ điều phối</span>
+                </span>
+                <span aria-hidden="true" class="ml-auto text-primary transition-transform group-hover:translate-x-1">→</span>
+              </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TRANG CHI TIẾT: Đội ngũ điều phối (mở bằng link #doi-ngu-dieu-phoi) -->
+  <div id="doi-ngu-dieu-phoi" class="pkg-page fixed inset-0 z-[60] bg-cream overflow-y-auto" role="dialog" aria-modal="true" aria-labelledby="doi-ngu-dieu-phoi-title" aria-hidden="true">
+    <!-- Thanh trên cùng -->
+    <div class="sticky top-0 z-10 header-glass border-b border-black/10">
+      <div class="container mx-auto px-4 h-16 md:h-20 flex items-center justify-between">
+        <a href="#planning" class="pkg-back inline-flex items-center gap-3 text-sm tracking-widest uppercase text-ink hover:text-primary transition-colors">
+          <span aria-hidden="true">←</span><span data-i18n="pkg.back">Quay lại Planning</span>
+        </a>
+        <img src="images/logo-amoa.png" alt="Amoa" width="472" height="146" class="h-9 md:h-11 w-auto" />
+        <a href="#planning" class="w-10 h-10 inline-flex items-center justify-center rounded-full border border-line text-ink hover:text-primary hover:border-primary transition-colors" aria-label="Đóng" data-i18n-aria="pkg.close">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" /></svg>
+        </a>
+      </div>
+    </div>
+
+    <!-- Ảnh bìa -->
+    <div class="relative h-[52vh] min-h-[360px] overflow-hidden bg-black">
+      <img src="https://images.unsplash.com/photo-1583939003579-730e3918a45a?auto=format&fit=crop&w=2000&q=80" alt="Cô dâu chú rể giữa mưa hoa giấy" data-i18n-alt="alt.dayof.cover" class="absolute inset-0 w-full h-full object-cover opacity-75" />
+      <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent"></div>
+      <div class="absolute inset-x-0 bottom-0">
+        <div class="container mx-auto px-4 pb-10 md:pb-14 text-white">
+          <p class="text-xs md:text-sm tracking-[0.3em] uppercase text-white/80 mb-3"><span class="font-heading text-xl md:text-2xl tracking-normal mr-3">03</span>Day-of Coordination</p>
+          <h2 id="doi-ngu-dieu-phoi-title" class="text-5xl md:text-7xl leading-tight" data-i18n="dayof.title">Đội ngũ điều phối</h2>
+        </div>
+      </div>
+    </div>
+
+    <!-- Nội dung -->
+    <div class="container mx-auto px-4 py-16 md:py-24">
+      <div class="grid lg:grid-cols-3 gap-12 lg:gap-16">
+        <div class="lg:col-span-2">
+          <p class="text-2xl md:text-3xl font-heading text-secondary leading-snug mb-6" data-i18n="dayof.desc">Hai bạn đã tự lên kế hoạch — Amoa đảm bảo mọi thứ diễn ra trơn tru đúng như kịch bản.</p>
+          <p class="text-lg text-muted leading-relaxed mb-14" data-i18n="dayof.long">Hai bạn đã tự tay lên kế hoạch — giờ là lúc trao lại cho đội ngũ điều phối. Amoa tiếp nhận toàn bộ kế hoạch, làm việc trước với các nhà cung cấp và có mặt từ sớm để mọi khoảnh khắc diễn ra đúng như hai bạn mong muốn.</p>
+
+          <h3 class="text-xs font-semibold text-primary uppercase tracking-[0.2em] mb-6" data-i18n="pkg.includes">Dịch vụ bao gồm</h3>
+          <ul class="grid sm:grid-cols-2 gap-4">
+                <li class="flex gap-4 p-5 bg-card rounded-lg">
+                  <span class="font-heading text-2xl text-accent leading-none">01</span>
+                  <span class="text-ink leading-relaxed" data-i18n="dayof.i1">Tiếp nhận kế hoạch trước ngày cưới</span>
+                </li>
+                <li class="flex gap-4 p-5 bg-card rounded-lg">
+                  <span class="font-heading text-2xl text-accent leading-none">02</span>
+                  <span class="text-ink leading-relaxed" data-i18n="dayof.i2">Khảo sát địa điểm &amp; tổng duyệt</span>
+                </li>
+                <li class="flex gap-4 p-5 bg-card rounded-lg">
+                  <span class="font-heading text-2xl text-accent leading-none">03</span>
+                  <span class="text-ink leading-relaxed" data-i18n="dayof.i3">Điều phối nghi lễ, tiệc &amp; nhà cung cấp</span>
+                </li>
+                <li class="flex gap-4 p-5 bg-card rounded-lg">
+                  <span class="font-heading text-2xl text-accent leading-none">04</span>
+                  <span class="text-ink leading-relaxed" data-i18n="dayof.i4">Xử lý phát sinh để hai bạn an tâm</span>
+                </li>
+                <li class="flex gap-4 p-5 bg-card rounded-lg">
+                  <span class="font-heading text-2xl text-accent leading-none">05</span>
+                  <span class="text-ink leading-relaxed" data-i18n="dayof.i5">Liên hệ &amp; xác nhận lịch với toàn bộ nhà cung cấp</span>
+                </li>
+                <li class="flex gap-4 p-5 bg-card rounded-lg">
+                  <span class="font-heading text-2xl text-accent leading-none">06</span>
+                  <span class="text-ink leading-relaxed" data-i18n="dayof.i6">Hỗ trợ cô dâu chú rể suốt buổi tiệc</span>
+                </li>
+          </ul>
+        </div>
+
+        <!-- Cột phải: phù hợp với / thời gian / đặt lịch -->
+        <aside class="lg:sticky lg:top-28 self-start bg-card rounded-xl p-8 space-y-8">
+          <div>
+            <h3 class="text-xs font-semibold text-primary uppercase tracking-[0.2em] mb-3" data-i18n="pkg.for">Phù hợp với</h3>
+            <p class="text-ink leading-relaxed" data-i18n="dayof.for">Cặp đôi đã tự lên kế hoạch chi tiết và muốn trọn vẹn tận hưởng ngày cưới mà không phải lo điều phối.</p>
+          </div>
+          <div class="border-t border-line pt-8">
+            <h3 class="text-xs font-semibold text-primary uppercase tracking-[0.2em] mb-3" data-i18n="pkg.time">Thời gian đồng hành</h3>
+            <p class="font-heading text-2xl" data-i18n="dayof.time">Từ 4 – 6 tuần trước ngày cưới</p>
+          </div>
+          <div class="border-t border-line pt-8">
+            <p class="text-sm text-muted leading-relaxed mb-6" data-i18n="pkg.note">Mỗi gói đều được điều chỉnh theo quy mô và mong muốn của hai bạn — liên hệ Amoa để nhận tư vấn chi tiết.</p>
+            <a href="#dat-lich" class="w-full inline-flex items-center justify-center rounded-full bg-primary hover:bg-secondary text-white px-8 h-14 text-lg transition-colors duration-300" data-i18n="cta.book">Đặt lịch tư vấn</a>
+          </div>
+        </aside>
+      </div>
+
+      <!-- Bộ ảnh -->
+      <div class="mt-20 md:mt-28">
+        <h3 class="text-xs font-semibold text-primary uppercase tracking-[0.2em] mb-8 text-center" data-i18n="pkg.gallery">Khoảnh khắc</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6 sm:pb-8">
+              <img src="https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=800&q=80" alt="Cô dâu chú rể thả bóng bay" data-i18n-alt="alt.dayof.g1" loading="lazy"
+                class="w-full aspect-[4/5] object-cover rounded-sm" />
+              <img src="https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&w=800&q=80" alt="Bàn tiệc dài với hoa trang trí" data-i18n-alt="alt.dayof.g2" loading="lazy"
+                class="w-full aspect-[4/5] object-cover rounded-sm sm:translate-y-8" />
+              <img src="https://images.unsplash.com/photo-1469371670807-013ccf25f16a?auto=format&fit=crop&w=800&q=80" alt="Lối đi lễ cưới ngoài trời với hoa tươi" data-i18n-alt="alt.dayof.g3" loading="lazy"
+                class="w-full aspect-[4/5] object-cover rounded-sm" />
+        </div>
+      </div>
+
+      <!-- Các gói khác -->
+      <div class="mt-20 md:mt-28 border-t border-line pt-12">
+        <h3 class="text-xs font-semibold text-primary uppercase tracking-[0.2em] mb-6" data-i18n="pkg.others">Các gói khác</h3>
+        <div class="grid md:grid-cols-2 gap-4">
+              <a href="#goi-toan-phan" class="group flex items-center gap-5 p-4 bg-card rounded-lg transition-colors hover:bg-line/60">
+                <img src="https://images.unsplash.com/photo-1591604466107-ec97de577aff?auto=format&fit=crop&w=300&q=80" alt="" loading="lazy" class="w-20 h-20 object-cover rounded-md shrink-0" />
+                <span>
+                  <span class="block text-[11px] tracking-[0.2em] uppercase text-primary">Full Planning</span>
+                  <span class="block font-heading text-2xl group-hover:text-primary transition-colors" data-i18n="full.title">Gói Toàn phần</span>
+                </span>
+                <span aria-hidden="true" class="ml-auto text-primary transition-transform group-hover:translate-x-1">→</span>
+              </a>
+              <a href="#goi-ban-phan" class="group flex items-center gap-5 p-4 bg-card rounded-lg transition-colors hover:bg-line/60">
+                <img src="https://images.unsplash.com/photo-1522413452208-996ff3f3e740?auto=format&fit=crop&w=300&q=80" alt="" loading="lazy" class="w-20 h-20 object-cover rounded-md shrink-0" />
+                <span>
+                  <span class="block text-[11px] tracking-[0.2em] uppercase text-primary">Partial Planning</span>
+                  <span class="block font-heading text-2xl group-hover:text-primary transition-colors" data-i18n="partial.title">Gói Bán phần</span>
+                </span>
+                <span aria-hidden="true" class="ml-auto text-primary transition-transform group-hover:translate-x-1">→</span>
+              </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =====================================================================
        FOOTER
        ===================================================================== -->
   <footer class="bg-dark text-cream py-12">
     <div class="container mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-6">
-      <!-- Logo chữ (thay bằng logo ảnh + class "brightness-0 invert" nếu cần bản trắng) -->
-      <div class="text-center md:text-left">
-        <p class="font-heading text-3xl">Amoa</p>
+      <!-- Logo bản trắng cho nền tối -->
+      <div class="flex flex-col items-center md:items-start">
+        <img src="images/logo-amoa-white.png" alt="Amoa — studio de fleur" width="472" height="146" loading="lazy" class="h-12 w-auto object-contain" />
         <p class="text-[11px] tracking-[0.25em] uppercase opacity-50 mt-1">Bespoke weddings, Timeless moments</p>
       </div>
 
@@ -716,8 +1546,7 @@
     /* --- 5. Lọc Portfolio theo tab --- */
     const filterBtns = document.querySelectorAll('.filter-btn');
     const workItems = document.querySelectorAll('.work-item');
-    filterBtns.forEach((btn) => {
-      btn.addEventListener('click', () => {
+    const applyFilter = (btn) => {
         const f = btn.dataset.filter;
         filterBtns.forEach((b) => {
           const on = b === btn;
@@ -728,12 +1557,13 @@
           b.setAttribute('aria-selected', String(on));
         });
         workItems.forEach((item) => {
-          const show = f === 'all' || item.dataset.category === f;
+          const show = item.dataset.category === f;
           item.classList.toggle('is-hidden', !show);
           if (show) { item.style.opacity = 0; requestAnimationFrame(() => { item.style.opacity = 1; }); }
         });
-      });
-    });
+    };
+    filterBtns.forEach((btn) => btn.addEventListener('click', () => applyFilter(btn)));
+    if (filterBtns.length) applyFilter(filterBtns[0]); // mặc định: tab đầu tiên (Tiệc Ngoài Trời)
 
     /* --- 6. Accordion dịch vụ (mở 1 mục tại một thời điểm) --- */
     const accItems = document.querySelectorAll('.acc-item');
@@ -751,6 +1581,131 @@
       });
     });
 
+    /* --- 6b. Trang chi tiết gói dịch vụ: mở/đóng theo hash trên URL ---
+       #goi-toan-phan → mở trang chi tiết; link khác (#services, #contact) → đóng lại. */
+    const pkgPages = document.querySelectorAll('.pkg-page');
+    const routePkg = () => {
+      const id = decodeURIComponent(location.hash.slice(1));
+      let opened = null;
+      pkgPages.forEach((page) => {
+        const on = page.id === id;
+        page.classList.toggle('is-open', on);
+        page.setAttribute('aria-hidden', String(!on));
+        if (on) opened = page;
+      });
+      const wasOpen = document.body.classList.contains('pkg-lock');
+      document.body.classList.toggle('pkg-lock', !!opened);
+      if (opened) {
+        opened.scrollTop = 0;
+        opened.querySelector('.pkg-back').focus({ preventScroll: true });
+      } else if (wasOpen && id) {
+        const target = document.getElementById(id);
+        if (target) target.scrollIntoView();
+      }
+    };
+    window.addEventListener('hashchange', routePkg);
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && document.body.classList.contains('pkg-lock')) {
+        if (location.hash === '#dat-lich') { document.querySelector('#dat-lich .bk-close').click(); return; }
+        const back = document.querySelector('.pkg-page.is-open .pkg-back');
+        location.hash = back ? back.getAttribute('href').slice(1) : 'services';
+      }
+    });
+    routePkg();
+
+    /* --- 6c. Form đặt lịch tư vấn ---
+       FORM_ENDPOINT: dán URL nhận dữ liệu (Google Apps Script / Formspree...) vào đây.
+       Để trống ('') → khi khách bấm Gửi, ứng dụng email mở sẵn nội dung gửi tới AMOA_EMAIL. */
+    const FORM_ENDPOINT = '';
+    const AMOA_EMAIL = 'mkt.amoa@gmail.com';
+    const AMOA_ZALO = 'https://zalo.me/0867562074';
+
+    const bkForm = document.getElementById('booking-form');
+    const bkDone = document.getElementById('bk-done');
+    const bkErr = document.getElementById('bk-error');
+    const dateInput = document.getElementById('bk-date');
+    const otherChk = document.getElementById('bk-event-other');
+    const otherTxt = document.getElementById('bk-event-other-text');
+    let bkSummary = '';
+
+    document.getElementById('bk-date-tbd').addEventListener('change', (e) => {
+      dateInput.disabled = e.target.checked;
+      dateInput.classList.toggle('opacity-50', e.target.checked);
+    });
+    otherChk.addEventListener('change', () => {
+      otherTxt.classList.toggle('hidden', !otherChk.checked);
+      if (otherChk.checked) otherTxt.focus();
+    });
+
+    // Đóng form: quay về đúng trang trước đó (nếu mở từ trong web), không thì về đầu trang
+    let bkOpenedInPage = false;
+    window.addEventListener('hashchange', (e) => {
+      if (location.hash === '#dat-lich') bkOpenedInPage = !!e.oldURL && e.oldURL.split('#')[0] === location.href.split('#')[0];
+    });
+    const closeBooking = () => {
+      if (bkOpenedInPage) { history.back(); return; }
+      history.replaceState(null, '', location.pathname + location.search);
+      routePkg();
+    };
+    document.querySelectorAll('.bk-close').forEach((a) => a.addEventListener('click', (e) => { e.preventDefault(); closeBooking(); }));
+
+    const buildSummary = () => {
+      const fd = new FormData(bkForm);
+      const rows = [];
+      const seen = new Set();
+      fd.forEach((_, key) => {
+        if (seen.has(key)) return;
+        seen.add(key);
+        const val = fd.getAll(key).map((v) => String(v).trim()).filter(Boolean).join(', ');
+        if (val) rows.push(key + ': ' + val);
+      });
+      return 'FORM THÔNG TIN DỊCH VỤ — AMOA\n\n' + rows.join('\n');
+    };
+    const mailtoUrl = () => 'mailto:' + AMOA_EMAIL
+      + '?subject=' + encodeURIComponent('Đặt lịch tư vấn — ' + (document.getElementById('bk-name').value.trim() || 'Khách hàng'))
+      + '&body=' + encodeURIComponent(bkSummary);
+
+    const showDone = (viaMail) => {
+      bkForm.classList.add('hidden');
+      document.getElementById('bk-mail-note').classList.toggle('hidden', !viaMail);
+      bkDone.classList.remove('hidden');
+      document.getElementById('dat-lich').scrollTop = 0;
+      bkDone.focus({ preventScroll: true });
+    };
+
+    bkForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const name = document.getElementById('bk-name');
+      const phone = document.getElementById('bk-phone');
+      const ok = name.value.trim() && phone.checkValidity() && phone.value.trim();
+      bkErr.classList.toggle('hidden', !!ok);
+      [name, phone].forEach((el) => el.classList.toggle('border-primary', !el.value.trim() || !el.checkValidity()));
+      if (!ok) { (name.value.trim() ? phone : name).focus(); return; }
+
+      bkSummary = buildSummary();
+      const btn = bkForm.querySelector('button[type="submit"]');
+      if (FORM_ENDPOINT) {
+        btn.disabled = true;
+        try {
+          await fetch(FORM_ENDPOINT, { method: 'POST', body: new FormData(bkForm), mode: 'no-cors' });
+          showDone(false);
+        } catch (err) {
+          // Lỗi mạng → vẫn cho khách gửi qua email để không mất thông tin
+          window.location.href = mailtoUrl();
+          showDone(true);
+        } finally { btn.disabled = false; }
+      } else {
+        window.location.href = mailtoUrl();
+        showDone(true);
+      }
+    });
+
+    document.getElementById('bk-reopen-mail').addEventListener('click', () => { window.location.href = mailtoUrl(); });
+    document.getElementById('bk-copy-zalo').addEventListener('click', async () => {
+      try { await navigator.clipboard.writeText(bkSummary); document.getElementById('bk-copied').classList.remove('hidden'); } catch (err) {}
+      window.open(AMOA_ZALO, '_blank', 'noopener');
+    });
+
     /* --- 7. Đa ngôn ngữ VI / EN ---
        Tiếng Việt lấy thẳng từ HTML; tiếng Anh nằm trong bảng EN bên dưới.
        Muốn dịch thêm một đoạn: gắn data-i18n="key" (nội dung), data-i18n-alt (alt ảnh),
@@ -764,6 +1719,8 @@
       'nav.about': 'About',
       'nav.portfolio': 'Portfolio',
       'nav.services': 'Services',
+      'nav.planning': 'Planning',
+      'nav.decor': 'Decoration',
       'nav.contact': 'Contact',
       'cta.book': 'Book a consultation',
 
@@ -776,6 +1733,9 @@
       'letter.eyebrow': 'A Letter',
       'letter.title': 'To every couple about to build a home together,',
       'alt.letter': 'Bride holding a pastel bouquet',
+      'alt.letter2': 'Wedding table with roses and candles',
+      'alt.letter3': 'Couple walking hand in hand on a hillside',
+      'alt.letter4': 'Bride and groom holding hands',
       'letter.p1': 'Every wedding is a story that belongs to just two people. At Amoa, we never begin with a ready-made design — we begin by <em class="not-italic text-ink">listening</em>: how you met, what you hold dear, and the picture your families have been dreaming of.',
       'letter.p2': 'Amoa’s mission is to <span class="text-primary">preserve that story and your unique imprint</span> in every flower, every candlelight, every moment. We believe true fulfilment comes from <span class="text-primary">caring for the smallest details</span> — so your big day is not only beautiful, but truly yours.',
       'letter.p3': 'Thank you for stopping by — we would love to walk this journey with you.',
@@ -794,19 +1754,28 @@
       'step5.desc': 'Running through the programme, checking every item and briefing the team so everything is ready.',
       'step6.title': 'The Big Day',
       'step6.desc': 'The Amoa team arrives early and coordinates every detail — so all you have to do is enjoy it to the fullest.',
+      'team.eyebrow': 'Our Team',
+      'team.title': 'The people walking alongside you',
+      'team.role1': 'Founder · Wedding Planner',
+      'team.role2': 'Floral Designer',
+      'team.role3': 'Wedding Coordinator',
+      'team.role4': 'Decor Stylist',
 
       'pf.title': 'Our Work / Featured Projects',
       'pf.desc': 'Every space tells its own story — told through flowers, light and carefully crafted details.',
       'pf.filterAria': 'Filter projects',
-      'pf.all': 'All',
       'cat.giatien': 'Family Ceremony',
       'cat.ngoaitroi': 'Outdoor Reception',
       'cat.nhahang': 'Restaurant Reception',
+      'cat.cauhon': 'Proposal',
       'work1.name': 'Garden Vow · Hoi An',
       'work2.name': 'Bride’s Farewell · Da Nang',
       'work4.name': 'Ancestral Ceremony · Tam Ky',
       'work5.name': 'Seaside Dinner · My Khe',
       'work8.name': 'Bride Procession · Hoi An',
+      'work10.name': 'Candlelit Proposal · Da Nang',
+      'work11.name': 'The Ring · Hoi An',
+      'work12.name': 'Sunset Promise · Son Tra',
       'alt.work1': 'Outdoor wedding ceremony under a floral arch',
       'alt.work2': 'Wedding rings on a bed of roses',
       'alt.work3': 'Banquet hall with voile drapes and chandeliers',
@@ -816,6 +1785,9 @@
       'alt.work7': 'Bride and groom chairs on the lawn',
       'alt.work8': 'Bride holding orange roses',
       'alt.work9': 'Wedding banquet hall with round tables',
+      'alt.work10': 'Proposal room with candles and rose petals',
+      'alt.work11': 'Diamond engagement ring',
+      'alt.work12': 'Couple embracing at sunset',
 
       'sv.title': 'Our Services',
       'sv.desc': 'Two core service groups — choose one or combine both — so every wedding is tailored to your story.',
@@ -838,6 +1810,43 @@
       'dayof.i2': 'Venue walkthrough &amp; rehearsal',
       'dayof.i3': 'Coordinating ceremony, reception &amp; vendors',
       'dayof.i4': 'Handling the unexpected so you can relax',
+      'pkg.more': 'View details',
+      'pkg.back': 'Back to Planning',
+      'pkg.home': 'Back to home',
+      'pkg.close': 'Close',
+      'pkg.includes': 'What’s included',
+      'pkg.for': 'Ideal for',
+      'pkg.time': 'Time together',
+      'pkg.note': 'Every package is tailored to your scale and wishes — contact Amoa for a detailed consultation.',
+      'pkg.gallery': 'Moments',
+      'pkg.others': 'Other packages',
+      'full.long': 'From our very first meeting until the last guest leaves, Amoa is the only partner you need. We take care of the concept, budget, vendors, spatial design and coordination — so you can spend every moment with each other and your families.',
+      'full.i5': 'Floral &amp; spatial design around your own concept',
+      'full.i6': 'Guest list, invitations &amp; seating plan management',
+      'full.for': 'Busy or long-distance couples, or anyone who wants every detail cared for without handling it all themselves.',
+      'full.time': 'From 6 – 12 months before the wedding',
+      'alt.full.cover': 'Bride and groom holding a bouquet',
+      'alt.full.g1': 'Wooden Mr &amp; Mrs wedding sign',
+      'alt.full.g2': 'Groom’s boutonnieres',
+      'alt.full.g3': 'Bride and groom under a veil',
+      'partial.long': 'Already have a venue, a few vendors or a clear idea? Amoa steps in exactly when you need us — reviewing what you have, filling the gaps and tying everything into one seamless whole.',
+      'partial.i5': 'Floral design &amp; styling for selected items',
+      'partial.i6': 'Programme script &amp; wedding-day timeline',
+      'partial.for': 'Couples who have prepared part of the way and need experienced hands to refine and complete the rest.',
+      'partial.time': 'From 3 – 6 months before the wedding',
+      'alt.partial.cover': 'Wedding table with greenery and candles',
+      'alt.partial.g1': 'Earth-toned bridal bouquet',
+      'alt.partial.g2': 'A pair of wedding rings',
+      'alt.partial.g3': 'Banquet hall with voile drapes and chandeliers',
+      'dayof.long': 'You planned it yourselves — now hand it over to the coordination team. Amoa takes over the whole plan, works with your vendors in advance and arrives early so every moment unfolds exactly as you imagined.',
+      'dayof.i5': 'Contacting &amp; confirming schedules with every vendor',
+      'dayof.i6': 'Looking after the couple throughout the celebration',
+      'dayof.for': 'Couples who have planned in detail and want to fully enjoy their day without worrying about coordination.',
+      'dayof.time': 'From 4 – 6 weeks before the wedding',
+      'alt.dayof.cover': 'Bride and groom in a shower of confetti',
+      'alt.dayof.g1': 'Bride and groom releasing balloons',
+      'alt.dayof.g2': 'Long banquet table with floral decor',
+      'alt.dayof.g3': 'Outdoor wedding aisle with fresh flowers',
       'sv.g2.desc': 'No ready-made templates — every space is designed around your concept, venue and story.',
       'alt.floral': 'Wedding reception space designed with flowers',
       'sv.quote': '“Flowers are not just decoration — they are how we tell stories.”',
@@ -853,6 +1862,79 @@
       'acc4.title': 'Individual Design Items',
       'acc4.desc': 'Just need a few highlights? Amoa designs individual items while keeping them in harmony with your overall concept.',
       'acc4.items': 'Bridal bouquet · Boutonnieres · Wedding car flowers · Photobooth · Welcome sign · Table flowers',
+      'dec.wedding': 'Wedding',
+      'bk.name.ph': 'e.g. Minh Anh Nguyen',
+      'bk.name': 'Full name',
+      'bk.phone.ph': '+84 9xx xxx xxx',
+      'bk.phone': 'Phone (Zalo / WhatsApp)',
+      'bk.email.ph': 'you@email.com',
+      'bk.email': 'Email (optional)',
+      'bk.date': 'Event date',
+      'bk.dateTbd': 'Date not set yet',
+      'bk.place.ph': 'e.g. Hoi An, a beach resort…',
+      'bk.place': 'Venue / City',
+      'bk.choose': '— Select —',
+      'bk.g1': 'Under 50 guests',
+      'bk.g2': '50 – 100 guests',
+      'bk.g3': '100 – 200 guests',
+      'bk.g4': '200 – 300 guests',
+      'bk.g5': 'Over 300 guests',
+      'bk.g6': 'Not sure yet',
+      'bk.guests': 'Number of guests',
+      'bk.s1': 'Basic information',
+      'bk.events': 'Occasion',
+      'bk.multi': 'Choose all that apply',
+      'bk.e1': 'Proposal',
+      'bk.e2': 'Family ceremony',
+      'bk.e3': 'Wedding',
+      'bk.e4': 'Outdoor reception',
+      'bk.e5': 'Other event',
+      'bk.eOther.ph': 'What is your event?',
+      'bk.pkg': 'Preferred service',
+      'bk.p1': 'Planning &amp; Coordination',
+      'bk.p2': 'Design &amp; Decoration',
+      'bk.p3': 'Both — full package',
+      'bk.p4': 'Not sure — I need advice',
+      'bk.s2': 'Services you are interested in',
+      'bk.b1': 'Under 50M VND',
+      'bk.b2': '50 – 100M VND',
+      'bk.b3': '100 – 200M VND',
+      'bk.b4': '200 – 500M VND',
+      'bk.b5': 'Over 500M VND',
+      'bk.b6': 'Need advice',
+      'bk.budget': 'Estimated budget',
+      'bk.done': 'Services you have already booked',
+      'bk.done.ph': 'e.g. Restaurant A and makeup artist B are booked…',
+      'bk.need': 'Services you would like Amoa to find',
+      'bk.need.ph': 'e.g. Photography, videography, live band…',
+      'bk.s3': 'Budget &amp; current preparation',
+      'bk.style.ph': 'e.g. Minimal, beige &amp; sage',
+      'bk.style': 'Favourite style / colour palette',
+      'bk.ref.ph': 'https://',
+      'bk.ref': 'Reference link (Pinterest / Drive)',
+      'bk.special': 'Special requests',
+      'bk.special.ph': 'Vegetarian menu, religion, required rituals…',
+      'bk.channel': 'Preferred contact channel',
+      'bk.c1': 'Zalo',
+      'bk.c2': 'WhatsApp',
+      'bk.c3': 'Phone call',
+      'bk.c4': 'Email',
+      'bk.s4': 'Ideas &amp; special notes',
+      'bk.back': 'Back',
+      'bk.eyebrow': 'Service enquiry form',
+      'bk.intro': 'Tell us a little about your big day — it only takes about 3 minutes. Amoa will get back to you to arrange a consultation.',
+      'bk.err': 'Please enter your name and a valid phone number.',
+      'bk.submit': 'Send my details',
+      'bk.privacy': 'Your details are only used by Amoa to prepare your consultation.',
+      'bk.thanks': 'Thank you both!',
+      'bk.thanksDesc': 'We will use these details to prepare the best possible plan for our upcoming meeting.',
+      'bk.mailNote': 'Your email app has opened with everything filled in — press <strong>Send</strong> to finish. If it did not open, copy your details and send them via Zalo instead.',
+      'bk.copyZalo': 'Copy &amp; open Zalo',
+      'bk.reopenMail': 'Open email again',
+      'bk.copied': 'Copied — paste it into the Amoa Zalo chat.',
+      'bk.backSite': 'Back to the website',
+      'ct.form': 'Fill in the consultation form',
+      'dec.event': 'Event',
       'sv.note': 'Every proposal is personalised to your concept and scale — contact Amoa for a detailed consultation.',
 
       'ct.title': 'Tell us <span class="text-primary">your story</span>.',
@@ -865,13 +1947,14 @@
     };
 
     // Lưu bản tiếng Việt gốc của từng phần tử để chuyển ngược lại
-    const i18nEls = document.querySelectorAll('[data-i18n],[data-i18n-alt],[data-i18n-aria],[data-i18n-content]');
+    const i18nEls = document.querySelectorAll('[data-i18n],[data-i18n-alt],[data-i18n-aria],[data-i18n-content],[data-i18n-ph]');
     const viText = new Map();
     i18nEls.forEach((el) => viText.set(el, {
       html: el.innerHTML,
       alt: el.getAttribute('alt'),
       aria: el.getAttribute('aria-label'),
       content: el.getAttribute('content'),
+      ph: el.getAttribute('placeholder'),
     }));
     const langBtns = document.querySelectorAll('.lang-btn');
 
@@ -886,6 +1969,7 @@
         if (d.i18nAlt) el.setAttribute('alt', pick(d.i18nAlt, vi.alt));
         if (d.i18nAria) el.setAttribute('aria-label', pick(d.i18nAria, vi.aria));
         if (d.i18nContent) el.setAttribute('content', pick(d.i18nContent, vi.content));
+        if (d.i18nPh) el.setAttribute('placeholder', pick(d.i18nPh, vi.ph));
       });
       [...dotsWrap.children].forEach((dot, i) => dot.setAttribute('aria-label', (en ? 'Slide ' : 'Ảnh ') + (i + 1)));
       langBtns.forEach((b) => {
